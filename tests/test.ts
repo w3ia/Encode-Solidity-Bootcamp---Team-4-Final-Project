@@ -50,7 +50,7 @@ describe('contract', function () {
     block: ${diplomaNFTCTx.blockNumber}`);
 
     const governorCF = new MyGovernor__factory(deployer);
-    governorContract = await governorCF.deploy();
+    governorContract = await governorCF.deploy(diplomaNFTContract.address, 1);
     const governorCTx = await governorContract.deployTransaction.wait();
     console.log(`
     Governor contract deployed:
