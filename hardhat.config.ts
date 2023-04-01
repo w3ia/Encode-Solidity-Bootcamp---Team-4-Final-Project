@@ -12,7 +12,15 @@ const INFURA_API_SECRET = process.env.INFURA_API_SECRET
 
 const config: HardhatUserConfig = {
   paths: { tests: "tests" },
-  solidity: "0.8.17",
+  solidity: {
+    version: "0.8.17",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 1000,
+      },
+    },
+  },
   etherscan: {
     apiKey: ETHERSCAN_API_KEY,
   },

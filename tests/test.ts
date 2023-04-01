@@ -1,5 +1,15 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import {
+  DiplomaNFT,
+  DiplomaNFT__factory,
+  Governor__factory,
+  MarkingToken,
+  MarkingToken__factory,
+  MyGovernor,
+  MyGovernor__factory,
+} from '../typechain-types';
 
 function convertStringArrayToBytes32(array: string[]) {
   const bytes32Array = [];
@@ -10,10 +20,42 @@ function convertStringArrayToBytes32(array: string[]) {
 }
 
 describe('contract', function () {
-  let contractNameContract: ContractName;
+  let markingTokenContract: MarkingToken;
+  let diplomaNFTContract: DiplomaNFT;
+  let governorContract: MyGovernor;
+  let deployer: SignerWithAddress;
+  let student1: SignerWithAddress;
+  let student2: SignerWithAddress;
+  let student3: SignerWithAddress;
 
   beforeEach(async function () {
-    // setup contract factories
+    // setup accounts
+    const [deployer, student1, student2, student3] = await ethers.getSigners();
+
+    // Deploy Contracts
+    const markingTokenCF = new MarkingToken__factory(deployer);
+    markingTokenContract = await markingTokenCF.deploy();
+    const markingTokenCTx = await markingTokenContract.deployTransaction.wait();
+    console.log(`
+    Marking Token contract deployed:
+    address: ${markingTokenCTx.contractAddress}
+    block: ${markingTokenCTx.blockNumber}`);
+
+    const diplomaNFTCF = new DiplomaNFT__factory(deployer);
+    diplomaNFTContract = await diplomaNFTCF.deploy();
+    const diplomaNFTCTx = await diplomaNFTContract.deployTransaction.wait();
+    console.log(`
+    Diploma NFT contract deployed:
+    address: ${diplomaNFTCTx.contractAddress}
+    block: ${diplomaNFTCTx.blockNumber}`);
+
+    const governorCF = new MyGovernor__factory(deployer);
+    governorContract = await governorCF.deploy();
+    const governorCTx = await governorContract.deployTransaction.wait();
+    console.log(`
+    Governor contract deployed:
+    address: ${governorCTx.contractAddress}
+    block: ${governorCTx.blockNumber}`);
   });
 
   describe.skip('when a student is connected to Diploma DAO', function () {
