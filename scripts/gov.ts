@@ -73,14 +73,16 @@ async function main() {
     const receipt = await tx.wait();
     console.log(receipt);
     // check the state
-    const state = await governorContract.state("85145047626562844815729868439955896131593233859946815759482103696516021498157");
-    console.log(`proposal state before vote is: ${state}`);
+    const stateBeforeVote = await governorContract.state("85145047626562844815729868439955896131593233859946815759482103696516021498157");
+    console.log(`proposal state before vote is: ${stateBeforeVote}`);
 
     // 5. VOTE
     const voteTx = await governorContract.connect(account1).castVote("85145047626562844815729868439955896131593233859946815759482103696516021498157", 1)
     const voteTxReceipt = await voteTx.wait();
     console.log(voteTxReceipt);
-
+    // check the state
+    const stateAfterVote = await governorContract.state("85145047626562844815729868439955896131593233859946815759482103696516021498157");
+    console.log(`proposal state before vote is: ${stateAfterVote}`);
 
 }
 
