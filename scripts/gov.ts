@@ -79,14 +79,14 @@ async function main() {
 
     // 5. VOTE
     // account 1 votes
-    const voteTx1 = await governorContract.connect(account1).castVote(propId, 0);
+    const voteTx1 = await governorContract.connect(account1).castVote(propId, 1);  // GovernorCountingSimple enum of VoteType is 0 against, 1 for, 2 abstain
     const voteTxReceipt1 = await voteTx1.wait();
     // check the state
     const stateAfterVote1 = await governorContract.state(propId);
     console.log(`proposal state after vote 1 is: ${stateAfterVote1}`);
     console.log(`Block number after vote 1 is: ${voteTxReceipt1.blockNumber}`);
     // account 2 votes
-    const voteTx2 = await governorContract.connect(account2).castVote(propId, 0);
+    const voteTx2 = await governorContract.connect(account2).castVote(propId, 1);
     const voteTxReceipt2 = await voteTx2.wait();
     // check the state
     const stateAfterVote2 = await governorContract.state(propId);
