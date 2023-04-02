@@ -4,9 +4,11 @@ import { token } from "../typechain-types/@openzeppelin/contracts";
 
 async function main() {
     // 1. GET TEST ACCOUNTS
+    // -------
     const [deployer, account1, account2] = await ethers.getSigners();
 
     // 2. DEPLOY VOTING TOKEN
+    // -------
     console.log("Deploying voting token contract!");
     const contractFactory = new MyToken__factory(deployer);
     const tokenContract: MyToken = await contractFactory.deploy();
@@ -14,6 +16,7 @@ async function main() {
     console.log(`The Token contract was deployed at the address ${tokenContract.address}`);
 
     // 3. DEPLOY GOVERNOR
+    // -------
     console.log("Deploying governor contract!");
     const governorContractFactory = new MyGovernor__factory(deployer);
     console.log("Deploying contract ...");
@@ -22,7 +25,8 @@ async function main() {
     console.log(`The Governor contract was deployed at the address ${governorContract.address}`);
 
     // 4. TOKEN DISTRIBUTION AND VOTING DELEGATION
-    const MINT_VALUE = ethers.utils.parseEther("10");
+    // -------
+    const MINT_VALUE = ethers.utils.parseEther("1");
     // Mint some tokens for account 1
     const mintTx1 = await tokenContract.mint(account1.address, MINT_VALUE);
     const mintTxReceipt1 = await mintTx1.wait();
@@ -57,9 +61,10 @@ async function main() {
     console.log(`Account 1 has a vote power of ${ethers.utils.formatEther(votePowerAccount1)} units`);
 
     // 5. PROPOSE
+    // -------
     const tokenAddress = tokenContract.address;
     const teamAddress = account1.address;
-    const grantAmount = ethers.utils.parseEther("1");
+    const grantAmount = ethers.utils.parseEther("3");
     const transferCalldata = tokenContract.interface.encodeFunctionData(`transfer`, [teamAddress, grantAmount]);
     console.log(`token address is: ${tokenAddress}`);
     // set proposal
@@ -77,7 +82,8 @@ async function main() {
     const stateBeforeVote = await governorContract.state(propId);
     console.log(`proposal state before voting is: ${stateBeforeVote}`);
 
-    // 5. VOTE
+    // 6. VOTE
+    // -------
     // account 1 votes
     const voteTx1 = await governorContract.connect(account1).castVote(propId, 1);  // GovernorCountingSimple enum of VoteType is 0 against, 1 for, 2 abstain
     const voteTxReceipt1 = await voteTx1.wait();
@@ -96,18 +102,22 @@ async function main() {
     console.log(`Block number after vote 2 is: ${voteTxReceipt2.blockNumber}`);
     const hasVoted2 = await governorContract.hasVoted(propId, account2.address)
     console.log(`Has vote for account2 after vote 2 is: ${hasVoted2}`);
+    // check proposal votes after voting
+    const propVotes = await governorContract.proposalVotes(propId)
+    console.log(`Proposal votes are: ${propVotes}`);
   
-    // 6. QUEUE PROPOSAL
-    const descriptionHash = ethers.utils.id(`Proposal #1: Give grant to team`);
-    const queueTx = await governorContract.queue(
-      [tokenAddress],
-      [0],
-      [transferCalldata],
-      descriptionHash,
-      {gasLimit: 50000}
-    );
-    const queueTxReceipt = await queueTx.wait();
-    console.log(`Proposal queued at block: ${queueTxReceipt.blockNumber}`);
+    // // 7. QUEUE PROPOSAL
+    // // -------
+    // const descriptionHash = ethers.utils.id(`Proposal #1: Give grant to team`);
+    // const queueTx = await governorContract.queue(
+    //   [tokenAddress],
+    //   [0],
+    //   [transferCalldata],
+    //   descriptionHash,
+    //   {gasLimit: 50000}
+    // );
+    // const queueTxReceipt = await queueTx.wait();
+    // console.log(`Proposal queued at block: ${queueTxReceipt.blockNumber}`);
 
 
 
