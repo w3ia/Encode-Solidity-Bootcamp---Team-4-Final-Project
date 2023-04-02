@@ -12,6 +12,7 @@ import {
 
 const VOTES_QUORUM = 1;
 const MARKING_TOKEN_MINT = ethers.utils.parseEther('10');
+const VOTE = 1;
 
 function convertStringArrayToBytes32(array: string[]) {
   const bytes32Array = [];
@@ -33,39 +34,39 @@ describe('Diploma DAO Project', async function () {
   beforeEach(async function () {
     // setup accounts
     [deployer, student1, student2, student3] = await ethers.getSigners();
-    console.log('Deployer address: ');
-    console.log(deployer.address);
+    // console.log('Deployer address: ');
+    // console.log(deployer.address);
 
     // Deploy Contracts
     const markingTokenCF = new MarkingToken__factory(deployer);
     markingTokenContract = await markingTokenCF.deploy();
     const markingTokenCTx = await markingTokenContract.deployTransaction.wait();
-    console.log(`
-    Marking Token contract deployed:
-    address: ${markingTokenCTx.contractAddress}
-    block: ${markingTokenCTx.blockNumber}`);
+    // console.log(`
+    // Marking Token contract deployed:
+    // address: ${markingTokenCTx.contractAddress}
+    // block: ${markingTokenCTx.blockNumber}`);
 
     const diplomaNFTCF = new DiplomaNFT__factory(deployer);
     diplomaNFTContract = await diplomaNFTCF.deploy();
     const diplomaNFTCTx = await diplomaNFTContract.deployTransaction.wait();
-    console.log(`
-    Diploma NFT contract deployed:
-    address: ${diplomaNFTCTx.contractAddress}
-    block: ${diplomaNFTCTx.blockNumber}`);
+    // console.log(`
+    // Diploma NFT contract deployed:
+    // address: ${diplomaNFTCTx.contractAddress}
+    // block: ${diplomaNFTCTx.blockNumber}`);
 
     const governorCF = new MyGovernor__factory(deployer);
     governorContract = await governorCF.deploy(
       markingTokenContract.address,
-      VOTES_QUORUM,
+      // VOTES_QUORUM,
       deployer.address
     );
     const governorCTx = await governorContract.deployTransaction.wait();
-    console.log('governorCTx.transactionHash');
-    console.log(governorCTx.transactionHash);
-    console.log(`
-    Governor contract deployed:
-    address: ${governorCTx.contractAddress}
-    block: ${governorCTx.blockNumber}`);
+    // console.log('governorCTx.transactionHash');
+    // console.log(governorCTx.transactionHash);
+    // console.log(`
+    // Governor contract deployed:
+    // address: ${governorCTx.contractAddress}
+    // block: ${governorCTx.blockNumber}`);
   });
 
   describe('when a new student is connected to Diploma DAO', async function () {
@@ -113,7 +114,6 @@ describe('Diploma DAO Project', async function () {
 
   describe('when the student submits a project', async function () {
     it('stores/displays project ID, URL/IPFS, and project status ', async function () {
-      
       // setup proposal
       const ipfsLink = 'QmX8XGmPxnM7JZawbShZKj8uJWQgY7R1hcKQz6n8nNsfyT';
 
@@ -150,41 +150,104 @@ describe('Diploma DAO Project', async function () {
       expect(proposalEvent?.length).to.equal(1);
 
       // Find the ProposalCreated event in the receipt
-      const proposalId = receipt.events?.[0]?.args?.proposalId
-      console.log(`Proposal ID: ${proposalId}`)
+      const proposalId = receipt.events?.[0]?.args?.proposalId;
+      console.log(`Proposal ID: ${proposalId}`);
       expect(proposalId).to.be.instanceOf(ethers.BigNumber);
     });
 
+    it('fails if no URL/IPFS Hash is entered', async function () {
+      // logic will be handled in frontend
+    });
 
-    // it('fails if no URL/IPFS Hash is entered', async function () {
+    it('fails if marking token balance is zero', async function () {
+      // logic will be handled in frontend
+    });
 
-    // });
+    it('will allow student to mint a Diploma NFT if their project status has received required number of passes', async function () {
+      // logic will be handled in frontend
+    });
+  });
 
-});
-
-  //   it('fails if marking token balance is zero', async function () {
-  //     // code here
-  //   });
-
-  //   it('will allow student to mint a Diploma NFT if their project status has received required number of passes', async function () {
-  //     // code here
-  //   });
+  //
   // });
 
-  // describe.skip('when a student views the Cohort section', async function () {
-  //   it('should list all available projects sorted by ???', async function () {
-  //     // code here
-  //   });
+  describe('when a student views the Cohort section', async function () {
+    it('should list all available projects sorted by ???', async function () {
+      // logic handled by frontend
+    });
 
-  //   it('should list only open projects when toggle/switch is set to OPEN', async function () {
-  //     // code here
-  //   });
-  //   it('should list only closed projects when toggle/switch is set to CLOSED', async function () {
-  //     // code here
-  //   });
+    it('should list only open projects when toggle/switch is set to OPEN', async function () {
+      // logic handled by frontend
+    });
+    it('should list only closed projects when toggle/switch is set to CLOSED', async function () {
+      // logic handled by frontend
+    });
 
-  //   it('should register a passing vote if a student enters a project ID in the form field and triggers vote transaction', async function () {
-  //     // code here
-  //   });
-  // });
+    it('should register a vote when a student places a vote on a project', async function () {
+      // setup proposal
+      const ipfsLink = 'QmX8XGmPxnM7JZawbShZKj8uJWQgY7R1hcKQz6n8nNsfyT';
+
+      const targets = [markingTokenContract.address];
+      const values = [0];
+      // store ipfs link in contract
+      const calldata = [
+        ethers.utils.defaultAbiCoder.encode(['string'], [ipfsLink]),
+      ];
+      // display decoded value
+      const decode = ethers.utils.defaultAbiCoder.decode(
+        ['string'],
+        calldata[0]
+      );
+      console.log('decoded proposal link: ');
+      console.log(decode);
+      const description = 'Proposal with IPFS link';
+
+      const proposalTx = await governorContract
+        .connect(student2)
+        .propose(targets, values, calldata, description, {
+          gasLimit: 8000000,
+        });
+
+      const receipt = await proposalTx.wait();
+
+      // Find the ProposalCreated event in the receipt
+      const proposalId = receipt.events?.[0]?.args?.proposalId;
+
+      // Mint marking tokens for student 2
+      const tokenBalanceBeforeMint = await markingTokenContract
+        .connect(student3)
+        .balanceOf(student3.address);
+      const mintTx = await markingTokenContract.mint(
+        student3.address,
+        MARKING_TOKEN_MINT
+      );
+
+      // Delegate student 3 marking tokens
+      const delegateTx = await markingTokenContract
+        .connect(student3)
+        .delegate(student3.address);
+      const votingPowerStudent3 = await markingTokenContract.getVotes(
+        student3.address
+      );
+      console.log(
+        `Student 3 voting power: ${ethers.utils.formatEther(
+          votingPowerStudent3
+        )}`
+      );
+
+      // Check state of proposal
+      const proposalBeforeAfterVote = await governorContract.connect(student3).state(proposalId);
+      console.log('Proposal state before vote: ');
+      console.log(proposalBeforeAfterVote);
+
+      const proposalVoteTx = await governorContract
+        .connect(student3)
+        .castVote(proposalId, 1);
+      const proposalVoteReceipt = await proposalVoteTx.wait();
+
+      const proposalStateAfterVote = await governorContract.state(proposalId);
+      console.log('Proposal state after vote: ');
+      console.log(proposalStateAfterVote);
+    });
+  });
 });
