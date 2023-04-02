@@ -71,18 +71,31 @@ async function main() {
       );
     // console.log(tx);
     const receipt = await tx.wait();
-    console.log(receipt);
+    const propId = receipt.events?.[0]?.args?.proposalId;
+    console.log(`Proposal ID is: ${propId}`);
     // check the state
-    const stateBeforeVote = await governorContract.state("85145047626562844815729868439955896131593233859946815759482103696516021498157");
+    const stateBeforeVote = await governorContract.state(propId);
     console.log(`proposal state before vote is: ${stateBeforeVote}`);
 
     // 5. VOTE
-    const voteTx = await governorContract.connect(account1).castVote("85145047626562844815729868439955896131593233859946815759482103696516021498157", 1)
+    const voteTx = await governorContract.connect(account1).castVote(propId, 1)
     const voteTxReceipt = await voteTx.wait();
-    console.log(voteTxReceipt);
     // check the state
-    const stateAfterVote = await governorContract.state("85145047626562844815729868439955896131593233859946815759482103696516021498157");
+    const stateAfterVote = await governorContract.state(propId);
     console.log(`proposal state before vote is: ${stateAfterVote}`);
+    console.log(`Block number after voting is: ${voteTxReceipt.blockNumber}`);
+
+    // // 6. EXECUTE PROPOSAL
+    // const descriptionHash = ethers.utils.id(`Proposal #1: Give grant to team`);
+
+    // const queueTx = await governorContract.queue(
+    //   [tokenAddress],
+    //   [0],
+    //   [transferCalldata],
+    //   descriptionHash,
+    // );
+
+
 
 }
 
