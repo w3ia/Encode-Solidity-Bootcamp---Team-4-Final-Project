@@ -1,28 +1,47 @@
 import { ethers } from "hardhat";
 import { MyGovernor, MyGovernor__factory, MyToken, MyToken__factory } from "../typechain-types";
 import { token } from "../typechain-types/@openzeppelin/contracts";
+import { mine, time } from "@nomicfoundation/hardhat-network-helpers";
+import { TimelockController__factory } from "../typechain-types/factories/contracts";
+import { TimelockController } from "../typechain-types/contracts";
 
 async function main() {
     // 1. GET TEST ACCOUNTS
+    // -------
     const [deployer, account1, account2] = await ethers.getSigners();
 
     // 2. DEPLOY VOTING TOKEN
+    // -------
     console.log("Deploying voting token contract!");
     const contractFactory = new MyToken__factory(deployer);
     const tokenContract: MyToken = await contractFactory.deploy();
     const deployTransactionReceipt = await tokenContract.deployTransaction.wait();
     console.log(`The Token contract was deployed at the address ${tokenContract.address}`);
 
-    // 3. DEPLOY GOVERNOR
+    // 3. DEPLOY TIMELOCK 
+    // -------
+    console.log("Deploying voting token contract!");
+    const contractFactoryTL = new TimelockController__factory(deployer);
+    const timelockContract: TimelockController = await contractFactoryTL.deploy(0, [deployer.address], [deployer.address], deployer.address);
+    const timelockContractReceipt = await timelockContract.deployTransaction.wait();
+    console.log(`The Timelock contract was deployed at the address ${timelockContract.address}`);
+
+    // DEPLOY GOVERNOR
+    // -------
     console.log("Deploying governor contract!");
     const governorContractFactory = new MyGovernor__factory(deployer);
     console.log("Deploying contract ...");
-    const governorContract: MyGovernor = await governorContractFactory.deploy(tokenContract.address, deployer.address);
+    const governorContract: MyGovernor = await governorContractFactory.deploy(tokenContract.address, timelockContract.address);
     const deployTxReceipt = await governorContract.deployTransaction.wait();
     console.log(`The Governor contract was deployed at the address ${governorContract.address}`);
 
-    // 4. TOKEN DISTRIBUTION AND VOTING DELEGATION
-    const MINT_VALUE = ethers.utils.parseEther("10");
+    // SET TIMELOCK ROLE WITH GOV ADDRESS
+    const setExecutor = await timelockContract.grantRole(await timelockContract.EXECUTOR_ROLE(), governorContract.address)
+    const setProposer = await timelockContract.grantRole(await timelockContract.PROPOSER_ROLE(), governorContract.address)
+
+    // TOKEN DISTRIBUTION AND VOTING DELEGATION
+    // -------
+    const MINT_VALUE = ethers.utils.parseEther("99");
     // Mint some tokens for account 1
     const mintTx1 = await tokenContract.mint(account1.address, MINT_VALUE);
     const mintTxReceipt1 = await mintTx1.wait();
@@ -57,10 +76,11 @@ async function main() {
     console.log(`Account 1 has a vote power of ${ethers.utils.formatEther(votePowerAccount1)} units`);
 
     // 5. PROPOSE
+    // -------
     const tokenAddress = tokenContract.address;
     const teamAddress = account1.address;
-    const grantAmount = ethers.utils.parseEther("1");
-    const transferCalldata = tokenContract.interface.encodeFunctionData(`transfer`, [teamAddress, grantAmount]);
+    const grantAmount = ethers.utils.parseEther("3");
+    const transferCalldata = tokenContract.interface.encodeFunctionData(`mint`, [teamAddress, grantAmount]);
     console.log(`token address is: ${tokenAddress}`);
     // set proposal
     let tx = await governorContract.propose(
@@ -71,18 +91,85 @@ async function main() {
       );
     // console.log(tx);
     const receipt = await tx.wait();
-    console.log(receipt);
+    const receiptBlock = receipt.blockNumber;
+    console.log(`Block when proposal is made: ${receiptBlock}`);
+    const propId = receipt.events?.[0]?.args?.proposalId;
+    console.log(`Proposal ID is: ${propId}`);
     // check the state
-    const stateBeforeVote = await governorContract.state("85145047626562844815729868439955896131593233859946815759482103696516021498157");
-    console.log(`proposal state before vote is: ${stateBeforeVote}`);
+    const stateBeforeVote = await governorContract.state(propId);
+    console.log(`proposal state before voting is: ${stateBeforeVote}`);
 
-    // 5. VOTE
-    const voteTx = await governorContract.connect(account1).castVote("85145047626562844815729868439955896131593233859946815759482103696516021498157", 1)
-    const voteTxReceipt = await voteTx.wait();
-    console.log(voteTxReceipt);
+    // 6. VOTE
+    // -------
+    // account 1 votes
+    const voteTx1 = await governorContract.connect(account1).castVote(propId, 1);  // GovernorCountingSimple enum of VoteType is 0 against, 1 for, 2 abstain
+    const voteTxReceipt1 = await voteTx1.wait();
     // check the state
-    const stateAfterVote = await governorContract.state("85145047626562844815729868439955896131593233859946815759482103696516021498157");
-    console.log(`proposal state before vote is: ${stateAfterVote}`);
+    const stateAfterVote1 = await governorContract.state(propId);
+    console.log(`proposal state after vote 1 is: ${stateAfterVote1}`);
+    console.log(`Block number after vote 1 is: ${voteTxReceipt1.blockNumber}`);
+    const hasVoted1 = await governorContract.hasVoted(propId, account1.address)
+    console.log(`Has vote for account1 after vote 1 is: ${hasVoted1}`);
+    // account 2 votes
+    const voteTx2 = await governorContract.connect(account2).castVote(propId, 1);
+    const voteTxReceipt2 = await voteTx2.wait();
+    // check the state
+    const stateAfterVote2 = await governorContract.state(propId);
+    console.log(`proposal state after vote 2 is: ${stateAfterVote2}`);
+    console.log(`Block number after vote 2 is: ${voteTxReceipt2.blockNumber}`);
+    const hasVoted2 = await governorContract.hasVoted(propId, account2.address)
+    console.log(`Has vote for account2 after vote 2 is: ${hasVoted2}`);
+    // check proposal votes after voting
+    const propVotes = await governorContract.proposalVotes(propId)
+    console.log(`Proposal votes are: ${propVotes}`);
+    const forVotes = propVotes.forVotes;
+    console.log(`For votes are: ${forVotes}`)
+    const againstVotes = propVotes.againstVotes;
+    console.log(`Against votes are: ${againstVotes}`)
+    // check total supply of tokens.
+    const totalSupplyToken = await tokenContract.totalSupply()
+    console.log(`Token total supply is: ${totalSupplyToken}`)
+    // check the quorum 
+    const quorum = await governorContract.quorum(8);
+    console.log(`Quorum is: ${quorum}`)
+    // check the block again
+    await mine(2);
+    const block = await time.latestBlock();
+    console.log(`Block number before calling queue function is: ${block}`);
+    // checking the voting period
+    const votingPeriod = await governorContract.votingPeriod()
+    console.log(`Voting period is: ${votingPeriod}`)
+    // // mine a new  block
+
+    // QUEUE PROPOSAL
+    // -------
+    console.log(`deployer address is: ${deployer.address}`)
+    const stateChange = await governorContract.state(propId);
+    console.log(`Current state before queue is: ${stateChange}`)
+    const descriptionHash = ethers.utils.id(`Proposal #1: Give grant to team`);
+    const queueTx = await governorContract.queue(
+      [tokenAddress],
+      [0],
+      [transferCalldata],
+      descriptionHash,
+      {gasLimit: 1000000}
+    );
+    const queueTxReceipt = await queueTx.wait();
+    console.log(`Proposal queued at block: ${queueTxReceipt.blockNumber}`);
+
+    // EXECUTE PROPOSAL
+    const executeTx = await governorContract.execute(
+        [tokenAddress],
+        [0],
+        [transferCalldata],
+        descriptionHash,
+      );
+    const executeTxReceipt = await queueTx.wait();
+    console.log(`Proposal executed at block: ${executeTxReceipt.blockNumber}`);
+
+    tokenBalanceAccount1 = await tokenContract.balanceOf(account1.address);
+    console.log(tokenBalanceAccount1)
+
 
 }
 
