@@ -75,25 +75,36 @@ async function main() {
     console.log(`Proposal ID is: ${propId}`);
     // check the state
     const stateBeforeVote = await governorContract.state(propId);
-    console.log(`proposal state before vote is: ${stateBeforeVote}`);
+    console.log(`proposal state before voting is: ${stateBeforeVote}`);
 
     // 5. VOTE
-    const voteTx = await governorContract.connect(account1).castVote(propId, 1)
-    const voteTxReceipt = await voteTx.wait();
+    // account 1 votes
+    const voteTx1 = await governorContract.connect(account1).castVote(propId, 0);
+    const voteTxReceipt1 = await voteTx1.wait();
     // check the state
-    const stateAfterVote = await governorContract.state(propId);
-    console.log(`proposal state before vote is: ${stateAfterVote}`);
-    console.log(`Block number after voting is: ${voteTxReceipt.blockNumber}`);
+    const stateAfterVote1 = await governorContract.state(propId);
+    console.log(`proposal state after vote 1 is: ${stateAfterVote1}`);
+    console.log(`Block number after vote 1 is: ${voteTxReceipt1.blockNumber}`);
+    // account 2 votes
+    const voteTx2 = await governorContract.connect(account2).castVote(propId, 0);
+    const voteTxReceipt2 = await voteTx2.wait();
+    // check the state
+    const stateAfterVote2 = await governorContract.state(propId);
+    console.log(`proposal state after vote 2 is: ${stateAfterVote2}`);
+    console.log(`Block number after vote 2 is: ${voteTxReceipt2.blockNumber}`);
+  
+    // 6. QUEUE PROPOSAL
+    const descriptionHash = ethers.utils.id(`Proposal #1: Give grant to team`);
+    const queueTx = await governorContract.queue(
+      [tokenAddress],
+      [0],
+      [transferCalldata],
+      descriptionHash,
+      {gasLimit: 50000}
+    );
+    const queueTxReceipt = await queueTx.wait();
+    console.log(`Proposal queued at block: ${queueTxReceipt.blockNumber}`);
 
-    // // 6. EXECUTE PROPOSAL
-    // const descriptionHash = ethers.utils.id(`Proposal #1: Give grant to team`);
-
-    // const queueTx = await governorContract.queue(
-    //   [tokenAddress],
-    //   [0],
-    //   [transferCalldata],
-    //   descriptionHash,
-    // );
 
 
 
