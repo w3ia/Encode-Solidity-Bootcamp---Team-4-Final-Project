@@ -1,6 +1,7 @@
 import { ethers } from "hardhat";
 import { MyGovernor, MyGovernor__factory, MyToken, MyToken__factory } from "../typechain-types";
 import { token } from "../typechain-types/@openzeppelin/contracts";
+import { mine, time } from "@nomicfoundation/hardhat-network-helpers";
 
 async function main() {
     // 1. GET TEST ACCOUNTS
@@ -26,7 +27,7 @@ async function main() {
 
     // 4. TOKEN DISTRIBUTION AND VOTING DELEGATION
     // -------
-    const MINT_VALUE = ethers.utils.parseEther("1");
+    const MINT_VALUE = ethers.utils.parseEther("99");
     // Mint some tokens for account 1
     const mintTx1 = await tokenContract.mint(account1.address, MINT_VALUE);
     const mintTxReceipt1 = await mintTx1.wait();
@@ -65,7 +66,7 @@ async function main() {
     const tokenAddress = tokenContract.address;
     const teamAddress = account1.address;
     const grantAmount = ethers.utils.parseEther("3");
-    const transferCalldata = tokenContract.interface.encodeFunctionData(`transfer`, [teamAddress, grantAmount]);
+    const transferCalldata = tokenContract.interface.encodeFunctionData(`mint`, [teamAddress, grantAmount]);
     console.log(`token address is: ${tokenAddress}`);
     // set proposal
     let tx = await governorContract.propose(
@@ -105,19 +106,33 @@ async function main() {
     // check proposal votes after voting
     const propVotes = await governorContract.proposalVotes(propId)
     console.log(`Proposal votes are: ${propVotes}`);
-  
-    // // 7. QUEUE PROPOSAL
-    // // -------
-    // const descriptionHash = ethers.utils.id(`Proposal #1: Give grant to team`);
-    // const queueTx = await governorContract.queue(
-    //   [tokenAddress],
-    //   [0],
-    //   [transferCalldata],
-    //   descriptionHash,
-    //   {gasLimit: 50000}
-    // );
-    // const queueTxReceipt = await queueTx.wait();
-    // console.log(`Proposal queued at block: ${queueTxReceipt.blockNumber}`);
+    const forVotes = propVotes.forVotes;
+    console.log(`For votes are: ${forVotes}`)
+    const againstVotes = propVotes.againstVotes;
+    console.log(`Against votes are: ${againstVotes}`)
+    // check total supply of tokens.
+    const totalSupplyToken = await tokenContract.totalSupply()
+    console.log(`Token total supply is: ${totalSupplyToken}`)
+    // check the quorum 
+    const quorum = await governorContract.quorum(8);
+    console.log(`Quorum is: ${quorum}`)
+    // mine a new  block
+    await mine(3);
+    const block = await time.latestBlock();
+    console.log(block);
+
+    // 7. QUEUE PROPOSAL
+    // -------
+    const descriptionHash = ethers.utils.id(`Proposal #1: Give grant to team`);
+    const queueTx = await governorContract.queue(
+      [tokenAddress],
+      [0],
+      [transferCalldata],
+      descriptionHash,
+      {gasLimit: 50000}
+    );
+    const queueTxReceipt = await queueTx.wait();
+    console.log(`Proposal queued at block: ${queueTxReceipt.blockNumber}`);
 
 
 
