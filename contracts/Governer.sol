@@ -25,17 +25,6 @@ contract MyGovernor is
         GovernorTimelockControl(_timelock)
     {}
 
-    constructor(
-        IVotes _token,
-        uint256 _votesQuorum,
-        TimelockController _timelock
-    )
-        Governor("MyGovernor")
-        GovernorVotes(_token)
-        GovernorVotesQuorumFraction(_votesQuorum)
-        GovernorTimelockControl(_timelock)
-    {}
-
     function votingDelay() public pure override returns (uint256) {
         return 1; // Time delay in blocks, 1 block ~13.14 seconds
     }
