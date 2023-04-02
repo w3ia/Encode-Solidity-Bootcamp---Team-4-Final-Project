@@ -2,6 +2,8 @@ import { ethers } from "hardhat";
 import { MyGovernor, MyGovernor__factory, MyToken, MyToken__factory } from "../typechain-types";
 import { token } from "../typechain-types/@openzeppelin/contracts";
 import { mine, time } from "@nomicfoundation/hardhat-network-helpers";
+import { TimelockController__factory } from "../typechain-types/factories/contracts";
+import { TimelockController } from "../typechain-types/contracts";
 
 async function main() {
     // 1. GET TEST ACCOUNTS
@@ -16,16 +18,28 @@ async function main() {
     const deployTransactionReceipt = await tokenContract.deployTransaction.wait();
     console.log(`The Token contract was deployed at the address ${tokenContract.address}`);
 
-    // 3. DEPLOY GOVERNOR
+    // 3. DEPLOY TIMELOCK 
+    // -------
+    console.log("Deploying voting token contract!");
+    const contractFactoryTL = new TimelockController__factory(deployer);
+    const timelockContract: TimelockController = await contractFactoryTL.deploy(0, [deployer.address], [deployer.address], deployer.address);
+    const timelockContractReceipt = await timelockContract.deployTransaction.wait();
+    console.log(`The Timelock contract was deployed at the address ${timelockContract.address}`);
+
+    // DEPLOY GOVERNOR
     // -------
     console.log("Deploying governor contract!");
     const governorContractFactory = new MyGovernor__factory(deployer);
     console.log("Deploying contract ...");
-    const governorContract: MyGovernor = await governorContractFactory.deploy(tokenContract.address, deployer.address);
+    const governorContract: MyGovernor = await governorContractFactory.deploy(tokenContract.address, timelockContract.address);
     const deployTxReceipt = await governorContract.deployTransaction.wait();
     console.log(`The Governor contract was deployed at the address ${governorContract.address}`);
 
-    // 4. TOKEN DISTRIBUTION AND VOTING DELEGATION
+    // SET TIMELOCK ROLE WITH GOV ADDRESS
+    const setExecutor = await timelockContract.grantRole(await timelockContract.EXECUTOR_ROLE(), governorContract.address)
+    const setProposer = await timelockContract.grantRole(await timelockContract.PROPOSER_ROLE(), governorContract.address)
+
+    // TOKEN DISTRIBUTION AND VOTING DELEGATION
     // -------
     const MINT_VALUE = ethers.utils.parseEther("99");
     // Mint some tokens for account 1
@@ -77,6 +91,8 @@ async function main() {
       );
     // console.log(tx);
     const receipt = await tx.wait();
+    const receiptBlock = receipt.blockNumber;
+    console.log(`Block when proposal is made: ${receiptBlock}`);
     const propId = receipt.events?.[0]?.args?.proposalId;
     console.log(`Proposal ID is: ${propId}`);
     // check the state
@@ -116,25 +132,43 @@ async function main() {
     // check the quorum 
     const quorum = await governorContract.quorum(8);
     console.log(`Quorum is: ${quorum}`)
-    // mine a new  block
-    await mine(3);
+    // check the block again
+    await mine(2);
     const block = await time.latestBlock();
-    console.log(block);
+    console.log(`Block number before calling queue function is: ${block}`);
+    // checking the voting period
+    const votingPeriod = await governorContract.votingPeriod()
+    console.log(`Voting period is: ${votingPeriod}`)
+    // // mine a new  block
 
-    // 7. QUEUE PROPOSAL
+    // QUEUE PROPOSAL
     // -------
+    console.log(`deployer address is: ${deployer.address}`)
+    const stateChange = await governorContract.state(propId);
+    console.log(`Current state before queue is: ${stateChange}`)
     const descriptionHash = ethers.utils.id(`Proposal #1: Give grant to team`);
     const queueTx = await governorContract.queue(
       [tokenAddress],
       [0],
       [transferCalldata],
       descriptionHash,
-      {gasLimit: 50000}
+      {gasLimit: 1000000}
     );
     const queueTxReceipt = await queueTx.wait();
     console.log(`Proposal queued at block: ${queueTxReceipt.blockNumber}`);
 
+    // EXECUTE PROPOSAL
+    const executeTx = await governorContract.execute(
+        [tokenAddress],
+        [0],
+        [transferCalldata],
+        descriptionHash,
+      );
+    const executeTxReceipt = await queueTx.wait();
+    console.log(`Proposal executed at block: ${executeTxReceipt.blockNumber}`);
 
+    tokenBalanceAccount1 = await tokenContract.balanceOf(account1.address);
+    console.log(tokenBalanceAccount1)
 
 
 }
