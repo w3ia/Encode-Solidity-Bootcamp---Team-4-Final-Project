@@ -14,6 +14,8 @@ contract MyGovernor is
     GovernorVotesQuorumFraction,
     GovernorTimelockControl
 {
+    uint public projectId;
+
     constructor(
         IVotes _token,
         uint256 _votesQuorum,
@@ -34,7 +36,7 @@ contract MyGovernor is
     }
 
     function proposalThreshold() public pure override returns (uint256) {
-        return 1;
+        return 0;
     }
 
     // The following functions are overrides required by Solidity.

@@ -60,6 +60,8 @@ describe('Diploma DAO Project', async function () {
       deployer.address
     );
     const governorCTx = await governorContract.deployTransaction.wait();
+    console.log('governorCTx.transactionHash');
+    console.log(governorCTx.transactionHash);
     console.log(`
     Governor contract deployed:
     address: ${governorCTx.contractAddress}
@@ -71,9 +73,9 @@ describe('Diploma DAO Project', async function () {
       console.log('Student address: ');
       console.log(student1.address);
 
-      const student1Tokens = await markingTokenContract.balanceOf(
-        student1.address
-      );
+      const student1Tokens = await markingTokenContract
+        .connect(student1)
+        .balanceOf(student1.address);
       console.log('Student 1 Marking Token balance: ');
       console.log(student1Tokens);
       expect(student1Tokens).to.equal(0);
@@ -82,16 +84,16 @@ describe('Diploma DAO Project', async function () {
 
   describe('when the student requests tokens', async function () {
     it('increases the marking token balance', async function () {
-      const tokenBalanceBeforeMint = await markingTokenContract.balanceOf(
-        student1.address
-      );
+      const tokenBalanceBeforeMint = await markingTokenContract
+        .connect(student1)
+        .balanceOf(student1.address);
       const mintTx = await markingTokenContract.mint(
         student1.address,
         MARKING_TOKEN_MINT
       );
-      const tokenBalanceAfterMint = await markingTokenContract.balanceOf(
-        student1.address
-      );
+      const tokenBalanceAfterMint = await markingTokenContract
+        .connect(student1)
+        .balanceOf(student1.address);
       const diff = tokenBalanceAfterMint.sub(
         MARKING_TOKEN_MINT.add(tokenBalanceBeforeMint)
       );
@@ -111,12 +113,54 @@ describe('Diploma DAO Project', async function () {
 
   describe('when the student submits a project', async function () {
     it('stores/displays project ID, URL/IPFS, and project status ', async function () {
-      // code here
+      
+      // setup proposal
+      const ipfsLink = 'QmX8XGmPxnM7JZawbShZKj8uJWQgY7R1hcKQz6n8nNsfyT';
+
+      const targets = [markingTokenContract.address];
+      const values = [0];
+      // store ipfs link in contract
+      const calldata = [
+        ethers.utils.defaultAbiCoder.encode(['string'], [ipfsLink]),
+      ];
+      const description = 'Proposal with IPFS link';
+
+      const proposalTx = await governorContract.propose(
+        targets,
+        values,
+        calldata,
+        description,
+        {
+          gasLimit: 8000000,
+        }
+      );
+      // console.log('proposalTx: ');
+      // console.log(proposalTx);
+
+      const receipt = await proposalTx.wait();
+      // console.log('receipt: ');
+      // console.log(receipt.events);
+
+      // Confirm proposal was created
+      const proposalEvent = receipt.events?.filter(
+        (item) => item.event === 'ProposalCreated'
+      );
+      // console.log('proposalEvent: ');
+      // console.log(proposalEvent);
+      expect(proposalEvent?.length).to.equal(1);
+
+      // Find the ProposalCreated event in the receipt
+      const proposalId = receipt.events?.[0]?.args?.proposalId
+      console.log(`Proposal ID: ${proposalId}`)
+      expect(proposalId).to.be.instanceOf(ethers.BigNumber);
     });
 
-  //   it('fails if no URL/IPFS Hash is entered', async function () {
-  //     // code here
-  //   });
+
+    // it('fails if no URL/IPFS Hash is entered', async function () {
+
+    // });
+
+});
 
   //   it('fails if marking token balance is zero', async function () {
   //     // code here
