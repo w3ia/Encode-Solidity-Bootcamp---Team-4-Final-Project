@@ -85,6 +85,8 @@ async function main() {
     const stateAfterVote1 = await governorContract.state(propId);
     console.log(`proposal state after vote 1 is: ${stateAfterVote1}`);
     console.log(`Block number after vote 1 is: ${voteTxReceipt1.blockNumber}`);
+    const hasVoted1 = await governorContract.hasVoted(propId, account1.address)
+    console.log(`Has vote for account1 after vote 1 is: ${hasVoted1}`);
     // account 2 votes
     const voteTx2 = await governorContract.connect(account2).castVote(propId, 1);
     const voteTxReceipt2 = await voteTx2.wait();
@@ -92,6 +94,8 @@ async function main() {
     const stateAfterVote2 = await governorContract.state(propId);
     console.log(`proposal state after vote 2 is: ${stateAfterVote2}`);
     console.log(`Block number after vote 2 is: ${voteTxReceipt2.blockNumber}`);
+    const hasVoted2 = await governorContract.hasVoted(propId, account2.address)
+    console.log(`Has vote for account2 after vote 2 is: ${hasVoted2}`);
   
     // 6. QUEUE PROPOSAL
     const descriptionHash = ethers.utils.id(`Proposal #1: Give grant to team`);
