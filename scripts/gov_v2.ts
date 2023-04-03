@@ -193,6 +193,7 @@ async function main() {
 
     // Get proposal end date
     let endDate = await getProposalEndDate(govC, propId);
+    console.log(`Current time is: ${new Date().toLocaleString()}`)
     console.log(`Proposal estimated end date: ${endDate.toLocaleString()}`);
 
     // check the state
