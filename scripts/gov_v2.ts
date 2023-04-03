@@ -11,7 +11,7 @@ import {
 import { ethers } from "hardhat";
 import { mine, time } from "@nomicfoundation/hardhat-network-helpers";
 import { Provider } from "@ethersproject/providers";
-import { Signer } from "ethers";
+import { BigNumberish, Signer } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 const MINT_VALUE = ethers.utils.parseEther("100");
@@ -19,7 +19,7 @@ const diplomaURI = "ipfs://bafkreihqfo2yd4o7fjveg5bptjgaobwqdd7nk7i7l7a6xmm5s25l
 
 
 // HELPER FUNCTIONS
-
+// -----------------------------------------------------------------------------------------------------------------------
 // Mint Marking Tokens
 async function mintMarkingTokens(address: string, markingToken: MarkingToken) {
     let mintTx = await markingToken.mint(address, MINT_VALUE);
@@ -42,7 +42,7 @@ async function delegate(delegator: SignerWithAddress, toAddress: string, marking
 }
 
 // Submit project (proposal)
-async function submitProject(DiplomaGuildC: DiplomaGuildNFT, govC: DiplomaGuildGov, projectURL: string, studentAddress: string) {
+async function submitProject(DiplomaGuildC: DiplomaGuildNFT, govC: DiplomaGuildGov, projectURL: string, studentAddress: string): Promise<BigNumberish> {
     let transferCalldata = DiplomaGuildC.interface.encodeFunctionData(`safeMint`, [studentAddress, diplomaURI]);
 
     let proposeTx = await govC.propose(
@@ -90,7 +90,7 @@ async function executeProject(DiplomaGuildC: DiplomaGuildNFT, govC: DiplomaGuild
 }
 
 // vote for project
-async function vote(voter: SignerWithAddress, propId: string, govC: DiplomaGuildGov) {
+async function vote(voter: SignerWithAddress, propId: BigNumberish, govC: DiplomaGuildGov) {
     let voteTx = await govC.connect(voter).castVote(propId, 1);  
     let voteTxReceipt = await voteTx.wait();
    
@@ -98,6 +98,23 @@ async function vote(voter: SignerWithAddress, propId: string, govC: DiplomaGuild
     let stateAfterVote = await govC.state(propId);
     console.log(`proposal state after account ${voter.address} voted is: ${stateAfterVote}`);
 }
+
+async function getProposalEndDate(govC: DiplomaGuildGov, propId: BigNumberish): Promise<Date> {
+   // Get block number when proposal expires
+    let proposalDeadline = await govC.proposalDeadline(propId);
+    // Get the current block number
+    let currentBlock = await ethers.provider.getBlockNumber();
+    // Work out remaining number of blocks
+    let remainingBlocks = proposalDeadline.toNumber() - currentBlock;
+    // Assume a 12s block time (this is OpenZepplin Contract wizard default block time), calculate remaining time in seconds
+    let remainingTime = remainingBlocks * 12;
+  
+    // Get the current date and add the remaining time to calculate the end date
+    const endDate = new Date();
+    endDate.setSeconds(endDate.getSeconds() + remainingTime);
+    return endDate;
+  }
+// -----------------------------------------------------------------------------------------------------------------------
 
 async function main() {
     // 1. GET TEST ACCOUNTS
@@ -173,7 +190,11 @@ async function main() {
     const studentAddress = account1.address;
     const projectURL = "https://github.com/w3ia/Encode-Solidity-Bootcamp---Team-4-Final-Project";
     let propId = await submitProject(DiplomaGuildC, govC, projectURL, studentAddress);
-    
+
+    // Get proposal end date
+    let endDate = await getProposalEndDate(govC, propId);
+    console.log(`Proposal estimated end date: ${endDate.toLocaleString()}`);
+
     // check the state
     let stateBeforeVote = await govC.state(propId);
     console.log(`proposal state before voting is: ${stateBeforeVote}`);

@@ -21,7 +21,7 @@ function syncWriteFile(filename: string, data: any) {
   });
 
   const contents = readFileSync(join(__dirname, filename), 'utf-8');
-  console.log(contents); // 👉️ "One Two Three Four"
+  console.log(contents); // outputs metadata
 
   return contents;
 }
