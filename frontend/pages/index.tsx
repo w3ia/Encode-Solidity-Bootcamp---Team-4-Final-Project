@@ -2,29 +2,48 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import { Button } from '@nextui-org/react';
+import { Navbar, Dropdown, Button, Link, Text, useTheme } from "@nextui-org/react";
+import { Layout } from "../components/Layout";
+import { DiplomaLogo } from "../components/DiplomaLogo";
+import { icons } from "../components/Icons";
 
 const Home: NextPage = () => {
   return (
     <div className={styles.container}>
-      <Head>
-        <title>DiplomaDAO</title>
-        <meta
-          content="DiplomaDAO"
-          name="description"
-        />
-        <link href="/favicon.ico" rel="icon" />
-      </Head>
-      <main className={styles.main}>
-        
-        <h2 className={styles.title}>
-          Welcome to DiplomaDAO
-        </h2>
-        <ConnectButton />
-      </main>
+      <Layout>
+      <Navbar isBordered variant="sticky">
+        <Navbar.Brand>
+
+          <DiplomaLogo />
+          <Text b color="inherit" hideIn="xs">
+             DiplomaDAO
+          </Text>
+        </Navbar.Brand>
+        <Navbar.Content
+          enableCursorHighlight
+          activeColor="secondary"
+          hideIn="xs"
+          variant="underline"
+        >
+          
+          <Navbar.Link isActive href="#">
+            Main
+          </Navbar.Link>
+          <Navbar.Link href="#">My Project</Navbar.Link>
+          <Navbar.Link href="#">Cohort</Navbar.Link>
+        </Navbar.Content>
+        <Navbar.Content>
+          
+          <Navbar.Item>
+          <ConnectButton />
+          </Navbar.Item>
+        </Navbar.Content>
+      </Navbar>
+    </Layout>
+
       <footer className={styles.footer}>
         <a href="https://diplomaDAO.xyz" rel="noopener noreferrer" target="_blank">
-        DiplomaDAO        </a>
+        🚀 Built by the DiplomaDAO Team 🚀     </a>
       </footer>
     </div>
   );
