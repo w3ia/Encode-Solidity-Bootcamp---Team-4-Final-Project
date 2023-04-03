@@ -8,16 +8,16 @@ import "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
 
-contract MyGovernor is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction, GovernorTimelockControl {
+contract DiplomaGuildGov is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction, GovernorTimelockControl {
     constructor(IVotes _token, TimelockController _timelock)
-        Governor("MyGovernor")
+        Governor("DiplomaGuildGov")
         GovernorSettings(0 /* 1 block */, 3 /* 1 week */, 0)
         // GovernorSettings(1 /* 1 block */, 50400 /* 1 week */, 0)
         GovernorVotes(_token)
         GovernorVotesQuorumFraction(1)
         GovernorTimelockControl(_timelock)
-    {}
 
+    {}
     // The following functions are overrides required by Solidity.
 
     function votingDelay()

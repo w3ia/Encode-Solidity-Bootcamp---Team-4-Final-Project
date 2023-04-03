@@ -1,9 +1,8 @@
 import { ethers } from "hardhat";
-import { MyGovernor, MyGovernor__factory, MyToken, MyToken__factory } from "../typechain-types";
-import { token } from "../typechain-types/@openzeppelin/contracts";
+import { DiplomaGuildGov, DiplomaGuildGov__factory, MarkingToken, MarkingToken__factory } from "../typechain-types";
 import { mine, time } from "@nomicfoundation/hardhat-network-helpers";
-import { TimelockController__factory } from "../typechain-types/factories/contracts";
-import { TimelockController } from "../typechain-types/contracts";
+import { DiplomaGuildTimeLock__factory } from "../typechain-types/factories/contracts";
+import { DiplomaGuildTimeLock } from "../typechain-types/contracts";
 
 async function main() {
     // 1. GET TEST ACCOUNTS
@@ -13,25 +12,25 @@ async function main() {
     // 2. DEPLOY VOTING TOKEN
     // -------
     console.log("Deploying voting token contract!");
-    const contractFactory = new MyToken__factory(deployer);
-    const tokenContract: MyToken = await contractFactory.deploy();
+    const contractFactory = new MarkingToken__factory(deployer);
+    const tokenContract: MarkingToken = await contractFactory.deploy();
     const deployTransactionReceipt = await tokenContract.deployTransaction.wait();
     console.log(`The Token contract was deployed at the address ${tokenContract.address}`);
 
     // 3. DEPLOY TIMELOCK 
     // -------
     console.log("Deploying voting token contract!");
-    const contractFactoryTL = new TimelockController__factory(deployer);
-    const timelockContract: TimelockController = await contractFactoryTL.deploy(0, [deployer.address], [deployer.address], deployer.address);
+    const contractFactoryTL = new DiplomaGuildTimeLock__factory(deployer);
+    const timelockContract: DiplomaGuildTimeLock = await contractFactoryTL.deploy(0, [deployer.address], [deployer.address], deployer.address);
     const timelockContractReceipt = await timelockContract.deployTransaction.wait();
     console.log(`The Timelock contract was deployed at the address ${timelockContract.address}`);
 
     // DEPLOY GOVERNOR
     // -------
     console.log("Deploying governor contract!");
-    const governorContractFactory = new MyGovernor__factory(deployer);
+    const governorContractFactory = new DiplomaGuildGov__factory(deployer);
     console.log("Deploying contract ...");
-    const governorContract: MyGovernor = await governorContractFactory.deploy(tokenContract.address, timelockContract.address);
+    const governorContract: DiplomaGuildGov = await governorContractFactory.deploy(tokenContract.address, timelockContract.address);
     const deployTxReceipt = await governorContract.deployTransaction.wait();
     console.log(`The Governor contract was deployed at the address ${governorContract.address}`);
 
