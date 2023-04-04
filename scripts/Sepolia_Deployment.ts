@@ -1,5 +1,14 @@
-import { MyToken, MyToken__factory, Ballot__factory } from "../typechain-types";
 import { ethers, Wallet } from 'ethers';
+import { 
+    DiplomaGuildGov, 
+    DiplomaGuildGov__factory, 
+    DiplomaGuildTimeLock, 
+    DiplomaGuildTimeLock__factory,
+    MarkingToken,
+    MarkingToken__factory,
+    DiplomaGuildNFT,
+    DiplomaGuildNFT__factory
+  } from "../typechain-types";
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -15,11 +24,10 @@ const MINT_VALUE = ethers.utils.parseEther("10");
 
 async function main () {
     
-    // gets the goerli provider
-    const provider = new ethers.providers.AlchemyProvider("goerli", process.env.ALCHEMY_API_KEY);
+    // CONNECT SEPOLIA
+    const provider = new ethers.providers.AlchemyProvider("sepolia", process.env.ALCHEMY_API_KEY);
 
-                    // 1. CONNECT ALL TEAM 4 TEST WALLETS
-
+    // CONNECT ALL TEAM 4 TEST WALLETS
     // instantiate wallet for Joshua
     const Joshua_Pk = process.env.PRIVATE_KEY_JOSHUA;
     if(!Joshua_Pk || Joshua_Pk.length <= 0) throw new Error("Missing environment: private key for Joshua");
@@ -41,19 +49,24 @@ async function main () {
     const walletJosh = new ethers.Wallet(Josh_Pk);
     console.log(`Connected to Josh's wallet address: ${walletJosh.address}`);
                     
-                    // 2. CREATE SIGNERS FROM WALLET
-
+    // CREATE SIGNERS FROM WALLET
     const signerJoshua = walletJoshua.connect(provider);
     const signerHardeep = walletHardeep.connect(provider);
     const signerChris = walletChris.connect(provider);
     const signerJosh = walletJosh.connect(provider);
 
-                    // 3. DEPLOY TOKEN CONTRACT
+    // DEPLOY TOKEN CONTRACT
+    const contractFactoryToken = new MarkingToken__factory(signerJoshua);
+    const contractToken: MarkingToken = await contractFactoryToken.deploy();
+    const deployTransactionReceipt = await contractToken.deployTransaction.wait();
+    console.log(`The Tokenized Vote Contract with address ${contractToken.address} was deployed at the block ${deployTransactionReceipt.blockNumber}`);
 
-    const contractFactory = new MyToken__factory(signerJoshua);
-    const contract: MyToken = await contractFactory.deploy();
-    const deployTransactionReceipt = await contract.deployTransaction.wait();
-    console.log(`The Tokenized Vote Contract with address ${contract.address} was deployed at the block ${deployTransactionReceipt.blockNumber}`);
+    // DEPLOY TIMELOCK CONTRACT
+    console.log("Deploying voting token contract!");
+    const contractFactoryTL = new DiplomaGuildTimeLock__factory(signerJoshua);
+    const timelockContract: DiplomaGuildTimeLock = await contractFactoryTL.deploy(0, [walletJoshua.address], [walletJoshua.address], walletJoshua.address);
+    const timelockContractReceipt = await timelockContract.deployTransaction.wait();
+    console.log(`The Timelock contract was deployed at the address ${timelockContract.address}`);
 
 }
 

@@ -12,6 +12,18 @@ const config: HardhatUserConfig = {
       }
     }
   },
+  defaultNetwork: "sepolia",
+  networks: {
+    hardhat: {
+    },
+    sepolia: {
+      url: "https://eth-sepolia.g.alchemy.com/v2/f8YbAUkgt-CWsyicd1hU_O_gcJzMu43m",
+      // accounts: [privateKey1, privateKey2, ...]
+    }
+  },
+  mocha: {
+    timeout: 40000
+  }
 };
 
 export default config;
