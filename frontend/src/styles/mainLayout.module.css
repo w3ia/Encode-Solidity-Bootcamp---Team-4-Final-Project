@@ -1,0 +1,8 @@
+footer.mainLayout {
+    padding: 2rem 0;
+    text-align: center;
+  }
+  
+  div.minWidth {
+    min-width: 675px;
+  }
