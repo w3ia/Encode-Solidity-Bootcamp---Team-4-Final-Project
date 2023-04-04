@@ -220,9 +220,9 @@ async function main() {
     // -------
     // account 1 votes
     // GovernorCountingSimple enum of VoteType is 0 against, 1 for, 2 abstain
-    await vote(account1, propId, govC);
+    await vote(signerJoshua, propId, govC);
     // account 2 votes
-    await vote(account2, propId, govC);
+    await vote(signerHardeep, propId, govC);
     
     // Fake the block creation - progess time
     console.log("Moving blocks forward...");
