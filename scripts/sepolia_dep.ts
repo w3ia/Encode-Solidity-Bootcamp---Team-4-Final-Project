@@ -14,6 +14,7 @@ import { Provider } from "@ethersproject/providers";
 import { BigNumberish, Signer } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import * as dotenv from 'dotenv';
+import { Sign } from "crypto";
 dotenv.config();
   
 const MINT_VALUE = ethers.utils.parseEther("100");
@@ -139,8 +140,8 @@ async function main() {
     // 3. DEPLOY TIMELOCK 
     // -------
     console.log("Deploying time lock contract!");
-    const timelockCF = new DiplomaGuildTimeLock__factory(deployer);
-    const timelockC: DiplomaGuildTimeLock = await timelockCF.deploy(0, [deployer.address], [deployer.address], deployer.address);
+    const timelockCF = new DiplomaGuildTimeLock__factory(signerJoshua);
+    const timelockC: DiplomaGuildTimeLock = await timelockCF.deploy(0, [signerJoshua.address], [signerJoshua.address], signerJoshua.address);
     await timelockC.deployTransaction.wait();
     console.log(`The Timelock contract was deployed at the address ${timelockC.address}`);
 
