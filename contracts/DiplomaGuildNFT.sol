@@ -41,6 +41,7 @@ contract DiplomaGuildNFT is ERC721, ERC721URIStorage, Pausable, AccessControl, E
         whenNotPaused
         override
     {
+        require(from == address(0) || to == address(0), "This Diploma is not transferable");
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
     }
 

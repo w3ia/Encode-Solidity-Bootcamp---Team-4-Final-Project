@@ -9,10 +9,11 @@ import {
   DiplomaGuildNFT__factory
 } from "../typechain-types";
 import { ethers } from "hardhat";
-import { mine, time } from "@nomicfoundation/hardhat-network-helpers";
-import { Provider } from "@ethersproject/providers";
-import { BigNumberish, Signer } from "ethers";
+import { mine } from "@nomicfoundation/hardhat-network-helpers";
+import { BigNumberish } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import axios from "axios";
+
 
 const MINT_VALUE = ethers.utils.parseEther("100");
 const diplomaURI = "ipfs://bafkreihqfo2yd4o7fjveg5bptjgaobwqdd7nk7i7l7a6xmm5s25lrzabjm"
@@ -113,6 +114,17 @@ async function getProposalEndDate(govC: DiplomaGuildGov, propId: BigNumberish): 
     const endDate = new Date();
     endDate.setSeconds(endDate.getSeconds() + remainingTime);
     return endDate;
+  }
+
+  // Utility function to convert ipfs urls to https
+  function convertIpfsToHttps(ipfsUrl: string): string {
+    const regex = /^ipfs:\/\/(.+)$/i;
+    const match = ipfsUrl.match(regex);
+    if (!match) {
+      throw new Error('Invalid IPFS URL format');
+    }
+    const cid = match[1];
+    return `https://${cid}.ipfs.dweb.link`;
   }
 // -----------------------------------------------------------------------------------------------------------------------
 
@@ -228,7 +240,17 @@ async function main() {
     // CHECK IF USER HAS DIPLOMA NFT AFTER EXECUTE - SHOULD RETURN 1
     diplomaBalanceAccount = await DiplomaGuildC.balanceOf(studentAddress);
     console.log(`DiplomaGuild NFT balance after execution: ${ethers.utils.formatUnits(diplomaBalanceAccount, 0)}`);
-    console.log(`DiplomaGuild NFT TokenURI: ${await DiplomaGuildC.tokenURI(0)}`);
+    let tokenURI = await DiplomaGuildC.tokenURI(0);
+    console.log(`DiplomaGuild NFT TokenURI: ${tokenURI}`);
+    let httpTokenURI = convertIpfsToHttps(tokenURI);
+    console.log(httpTokenURI);
+    let res = await axios.get(httpTokenURI);
+    let desc = await res.data;
+    console.log(desc);
+
+    // Attempt to transfer (Should fail)
+    await DiplomaGuildC.attach(studentAddress).approve(account2.address, 0);
+    await DiplomaGuildC.attach(studentAddress).transferFrom(studentAddress, account2.address, 0);
 }
 
 main().catch((error) => {
