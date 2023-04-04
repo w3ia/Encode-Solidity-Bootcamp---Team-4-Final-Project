@@ -249,8 +249,22 @@ async function main() {
     console.log(desc);
 
     // Attempt to transfer (Should fail)
-    await DiplomaGuildC.attach(studentAddress).approve(account2.address, 0);
-    await DiplomaGuildC.attach(studentAddress).transferFrom(studentAddress, account2.address, 0);
+   // let approveTx = await DiplomaGuildC.attach(studentAddress).approve(account2.address, 0);
+    //let approveTxReceipt = await approveTx.wait();
+    //console.log(`Diploma NFT transfer approved at block: ${approveTxReceipt.blockNumber}`)
+    let transferTx = await DiplomaGuildC.attach(studentAddress)["safeTransferFrom(address,address,uint256)"](
+        studentAddress, 
+        account2.address,
+        0);
+console.log(transferTx);
+    let transferTxReceipt = await transferTx.wait();
+    console.log(`Diploma NFT transfered at block: ${transferTxReceipt}`)
+
+    diplomaBalanceAccount = await DiplomaGuildC.balanceOf(studentAddress);
+    console.log(`DiplomaGuild NFT balance after transfer: ${ethers.utils.formatUnits(diplomaBalanceAccount, 0)}`);
+
+    diplomaBalanceAccount = await DiplomaGuildC.balanceOf(account2.address);
+    console.log(`DiplomaGuild NFT balance after execution account2: ${ethers.utils.formatUnits(diplomaBalanceAccount, 0)}`);
 }
 
 main().catch((error) => {
