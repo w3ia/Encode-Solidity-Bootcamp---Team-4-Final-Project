@@ -203,7 +203,7 @@ async function main() {
 
     // 7. PROPOSE
     // -------
-    const studentAddress = account1.address;
+    const studentAddress = walletJoshua.address;
     const projectURL = "https://github.com/w3ia/Encode-Solidity-Bootcamp---Team-4-Final-Project";
     let propId = await submitProject(DiplomaGuildC, govC, projectURL, studentAddress);
 
