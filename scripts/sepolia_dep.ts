@@ -11,7 +11,7 @@ import {
 import { ethers } from "hardhat";
 import { mine, time } from "@nomicfoundation/hardhat-network-helpers";
 import { Provider } from "@ethersproject/providers";
-import { BigNumberish, Signer } from "ethers";
+import { BigNumberish, Signer, Wallet } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import * as dotenv from 'dotenv';
 import { Sign } from "crypto";
@@ -41,7 +41,7 @@ async function getVotingPower(address: string, markingToken: MarkingToken) {
 }
 
 // Delegate tokens
-async function delegate(delegator: SignerWithAddress, toAddress: string, markingToken: MarkingToken) {
+async function delegate(delegator: Wallet, toAddress: string, markingToken: MarkingToken) {
     let delegateTx = await markingToken.connect(delegator).delegate(toAddress);
     let delegateTxReceipt = await delegateTx.wait();
     console.log(`Tokens delegated from ${delegator.address} for ${toAddress}`);
@@ -96,7 +96,7 @@ async function executeProject(DiplomaGuildC: DiplomaGuildNFT, govC: DiplomaGuild
 }
 
 // vote for project
-async function vote(voter: SignerWithAddress, propId: BigNumberish, govC: DiplomaGuildGov) {
+async function vote(voter: Wallet, propId: BigNumberish, govC: DiplomaGuildGov) {
     let voteTx = await govC.connect(voter).castVote(propId, 1);  
     let voteTxReceipt = await voteTx.wait();
     
@@ -123,12 +123,20 @@ async function getProposalEndDate(govC: DiplomaGuildGov, propId: BigNumberish): 
 // -----------------------------------------------------------------------------------------------------------------------
 
 async function main() {
-    // GET ACCOUNT
+    // GET ACCOUNTS
+    // Joshua
     const Joshua_Pk = process.env.PRIVATE_KEY_JOSHUA;
     if(!Joshua_Pk || Joshua_Pk.length <= 0) throw new Error("Missing environment: private key for Joshua");
     const walletJoshua = new ethers.Wallet(Joshua_Pk);
     console.log(`Connected to Joshua's wallet address: ${walletJoshua.address}`);
     const signerJoshua = walletJoshua.connect(provider);
+    // Hardeep
+    const Hardeep_Pk = process.env.PRIVATE_KEY_HARDEEP;
+    if(!Hardeep_Pk || Hardeep_Pk.length <= 0) throw new Error("Missing environment: private key for Hardeep");
+    const walletHardeep = new ethers.Wallet(Hardeep_Pk);
+    console.log(`Connected to Hardeep's wallet address: ${walletHardeep.address}`);
+    const signerHardeep = walletHardeep.connect(provider);
+
 
     // DEPLOY MARKING TOKEN
     console.log("Deploying marking token contract!");
@@ -161,7 +169,7 @@ async function main() {
     // 5. DEPLOY DIPLOMA NFT CONTRACT
     // -------
     console.log("Deploying diploma NFT contract!");
-    const DiplomaGuildFC = new DiplomaGuildNFT__factory(deployer);
+    const DiplomaGuildFC = new DiplomaGuildNFT__factory(signerJoshua);
     const DiplomaGuildC: DiplomaGuildNFT = await DiplomaGuildFC.deploy();
     await DiplomaGuildC.deployTransaction.wait();
     console.log(`The diploma NFT was deployed at the address ${DiplomaGuildC.address}`);
@@ -170,29 +178,28 @@ async function main() {
     await DiplomaGuildC.grantRole(await DiplomaGuildC.MINTER_ROLE(), timelockC.address);
     await DiplomaGuildC.grantRole(await DiplomaGuildC.PAUSER_ROLE(), timelockC.address);
 
-
-
     // 6. TOKEN DISTRIBUTION AND MARKING DELEGATION
     // -------
     // Mint some tokens for account 1
-    await mintMarkingTokens(account1.address, markingC);
+    await mintMarkingTokens(walletJoshua.address, markingC);
     // Mint some tokens for account 2
-    await mintMarkingTokens(account2.address, markingC);
+    await mintMarkingTokens(walletHardeep.address, markingC);
     
     // Check voting power of account 1 for the first time, before delegation
-    await getVotingPower(account1.address, markingC);
+    await getVotingPower(walletJoshua.address, markingC);
     // Check voting power of account 2 for the first time, before delegation
-    await getVotingPower(account2.address, markingC);
+    await getVotingPower(walletHardeep.address, markingC);
 
     // Self delegate for account 1 to create checkpoint and grant voting power (delegates everything we have)
-    await delegate(account1, account1.address, markingC);
+    await delegate(signerJoshua, walletJoshua.address, markingC);
     // Self delegate for account 2 to create checkpoint and grant voting power (delegates everything we have)
-    await delegate(account2, account2.address, markingC);
+    await delegate(signerHardeep, walletHardeep.address, markingC);
+    console.log(`Delegation completed!`)
 
     // Check voting power for account 1 after delegation
-    await getVotingPower(account1.address, markingC);
+    await getVotingPower(walletJoshua.address, markingC);
     // Check voting power for account 2 after delegation
-    await getVotingPower(account2.address, markingC);
+    await getVotingPower(walletHardeep.address, markingC);
 
     // 7. PROPOSE
     // -------
