@@ -223,12 +223,17 @@ async function main() {
     await vote(signerJoshua, propId, govC);
     // account 2 votes
     await vote(signerHardeep, propId, govC);
+
+    const voteTx = await govC.connect(signerJoshua).castVote(propId, 1);  
+    const voteTxReceipt = await voteTx.wait(4);
+    const stateAfterVote = await govC.state(propId);
+    console.log(`proposal state after account ${signerJoshua.address} voted is: ${stateAfterVote}`);
     
-    // Fake the block creation - progess time
-    console.log("Moving blocks forward...");
-    await mine(2);
-    let stateAfterMovingForward = await govC.state(propId);
-    console.log(`proposal state after moving blocks forward: ${stateAfterMovingForward}`);
+    // CHECK STATE AFTER VOTING
+    // console.log("Moving blocks forward...");
+    // await mine(2);
+    let stateAfterVoting = await govC.state(propId);
+    console.log(`proposal state after voting is: ${stateAfterVoting}`);
 
     // 9. QUEUE PROPOSAL
     // -------
