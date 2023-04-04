@@ -22,6 +22,11 @@ A [Peer Assessment](https://en.wikipedia.org/wiki/Peer_assessment) DAO where stu
 ## Local Setup
 > TODO: How to setup project locally and run it.
 
+## Frontend
+```bash
+cd /frontend && npx next dev
+```
+
 ## Built by:
  - [Joshua Bloom](https://github.com/AlgoBloom) 
  - [Josh Leong](https://github.com/zkjet)
