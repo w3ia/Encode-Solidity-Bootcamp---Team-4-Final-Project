@@ -148,7 +148,7 @@ async function main() {
     // 4. DEPLOY GOVERNOR
     // -------
     console.log("Deploying governor contract!");
-    const govCF = new DiplomaGuildGov__factory(deployer);
+    const govCF = new DiplomaGuildGov__factory(signerJoshua);
     const govC: DiplomaGuildGov = await govCF.deploy(markingC.address, timelockC.address);
     await govC.deployTransaction.wait();
     console.log(`The Governor contract was deployed at the address ${govC.address}`);
@@ -156,6 +156,7 @@ async function main() {
     // SET TIMELOCK ROLE WITH GOV ADDRESS
     await timelockC.grantRole(await timelockC.EXECUTOR_ROLE(), govC.address);
     await timelockC.grantRole(await timelockC.PROPOSER_ROLE(), govC.address);
+    console.log("Timelock roles reset!");
 
     // 5. DEPLOY DIPLOMA NFT CONTRACT
     // -------
