@@ -13,7 +13,6 @@ const Home: NextPage = () => {
       <Layout>
       <Navbar isBordered variant="sticky">
         <Navbar.Brand>
-
           <DiplomaLogo />
           <Text b color="inherit" hideIn="xs">
              DiplomaDAO
