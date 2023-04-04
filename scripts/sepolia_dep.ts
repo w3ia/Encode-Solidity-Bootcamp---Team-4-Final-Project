@@ -245,20 +245,6 @@ async function main() {
     diplomaBalanceAccount = await DiplomaGuildC.balanceOf(studentAddress);
     console.log(`DiplomaGuild NFT balance after execution: ${ethers.utils.formatUnits(diplomaBalanceAccount, 0)}`);
     console.log(`DiplomaGuild NFT TokenURI: ${await DiplomaGuildC.tokenURI(0)}`);
-
-    let transferTx = await DiplomaGuildC.attach(studentAddress)["safeTransferFrom(address,address,uint256)"](
-        studentAddress, 
-        signerHardeep.address,
-        0);
-    console.log(transferTx);
-    let transferTxReceipt = await transferTx.wait();
-    console.log(`Diploma NFT transfered at block: ${transferTxReceipt}`)
-
-    diplomaBalanceAccount = await DiplomaGuildC.balanceOf(studentAddress);
-    console.log(`DiplomaGuild NFT balance after transfer: ${ethers.utils.formatUnits(diplomaBalanceAccount, 0)}`);
-
-    diplomaBalanceAccount = await DiplomaGuildC.balanceOf(signerHardeep.address);
-    console.log(`DiplomaGuild NFT balance after execution hardeep: ${ethers.utils.formatUnits(diplomaBalanceAccount, 0)}`);
 }
 
 main().catch((error) => {

@@ -225,6 +225,7 @@ async function main() {
     await mine(2);
     let stateAfterMovingForward = await govC.state(propId);
     console.log(`proposal state after moving blocks forward: ${stateAfterMovingForward}`);
+    if(stateAfterMovingForward == 4) console.log(`Project passed! Congratulations! minting Diploma NFT!`);
 
     // 9. QUEUE PROPOSAL
     // -------
@@ -243,28 +244,9 @@ async function main() {
     let tokenURI = await DiplomaGuildC.tokenURI(0);
     console.log(`DiplomaGuild NFT TokenURI: ${tokenURI}`);
     let httpTokenURI = convertIpfsToHttps(tokenURI);
-    console.log(httpTokenURI);
     let res = await axios.get(httpTokenURI);
-    let desc = await res.data;
-    console.log(desc);
-
-    // Attempt to transfer (Should fail)
-   // let approveTx = await DiplomaGuildC.attach(studentAddress).approve(account2.address, 0);
-    //let approveTxReceipt = await approveTx.wait();
-    //console.log(`Diploma NFT transfer approved at block: ${approveTxReceipt.blockNumber}`)
-    let transferTx = await DiplomaGuildC.attach(studentAddress)["safeTransferFrom(address,address,uint256)"](
-        studentAddress, 
-        account2.address,
-        0);
-console.log(transferTx);
-    let transferTxReceipt = await transferTx.wait();
-    console.log(`Diploma NFT transfered at block: ${transferTxReceipt}`)
-
-    diplomaBalanceAccount = await DiplomaGuildC.balanceOf(studentAddress);
-    console.log(`DiplomaGuild NFT balance after transfer: ${ethers.utils.formatUnits(diplomaBalanceAccount, 0)}`);
-
-    diplomaBalanceAccount = await DiplomaGuildC.balanceOf(account2.address);
-    console.log(`DiplomaGuild NFT balance after execution account2: ${ethers.utils.formatUnits(diplomaBalanceAccount, 0)}`);
+    let metadata = await res.data;
+    console.log(`DiplomaGuild NFT metadata:\n ${JSON.stringify(metadata,null,2)}`);
 }
 
 main().catch((error) => {
