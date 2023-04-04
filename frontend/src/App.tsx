@@ -38,6 +38,7 @@ import { sepolia } from "wagmi/chains";
 import { infuraProvider } from "wagmi/providers/infura";
 import MainLayout from "../src/components/MainLayout";
 import AppProvider from "../src/components/store/AppProvider";
+import {VotingPeriod} from "../src/components/stateVars/VotingPeriod"
 import Home from "./components/Home";
 
 
@@ -69,6 +70,7 @@ const App = () => {
         <AppProvider>
           <MainLayout>
             <Home/>
+            <VotingPeriod/>
           </MainLayout>
         </AppProvider>
       </RainbowKitProvider>
@@ -77,3 +79,4 @@ const App = () => {
 };
 
 export default App;
+
