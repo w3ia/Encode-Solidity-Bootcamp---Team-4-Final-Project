@@ -1,4 +1,5 @@
 import styles from "../styles/MainPage.module.css";
+import { RequestTokens } from "./RequestTokens";
 
 export default function MainPage() {
   return (
@@ -8,7 +9,9 @@ export default function MainPage() {
           <span>Main Page</span>
         </h1>
       </header>
-
+      <div>
+        <RequestTokens />
+      </div>
       <div className={styles.buttons_container}>
         <a target={"_blank"} rel="noreferrer" href={""}>
           <div className={styles.button}>
