@@ -13,6 +13,7 @@ export class AppService {
   govC: ethers.Contract;
   diplomaGuildC: ethers.Contract;
   constructor(private config: ConfigService) {
+    //this.provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545/');
     this.provider = ethers.getDefaultProvider('sepolia');
     this.govC = new ethers.Contract(GOVERNOR_ADDRESS, govJson.abi, this.provider);
     this.diplomaGuildC = new ethers.Contract(DIPLOMAGUILD_ADDRESS, diplomaJson.abi, this.provider);
@@ -20,6 +21,7 @@ export class AppService {
 
   async queueAndExecute(projectURL: string, studentAddress: string): Promise<string> {
     // Setup signer:
+    //const privKey = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
     const privKey = this.config.get<string>('PRIVATE_KEY');
     if(!privKey || privKey.length <= 0) throw new HttpException('Internal Server Error: Invalid Key', HttpStatus.INTERNAL_SERVER_ERROR);
 
