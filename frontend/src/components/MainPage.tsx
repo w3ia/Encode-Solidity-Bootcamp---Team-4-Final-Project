@@ -1,4 +1,5 @@
 import styles from "../styles/MainPage.module.css";
+
 export default function MainPage() {
   return (
     <div className={styles.container}>
