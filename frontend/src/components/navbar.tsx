@@ -4,11 +4,11 @@ import styles from "../../styles/Navbar.module.css";
 import AppContext from "../components/store/AppContext";
 import { useAccount } from "wagmi";
 
+
 export default function Navbar() {
   const AppCtx = useContext(AppContext);
   const { isConnected } = useAccount();
   const [hasMounted, setHasMounted] = useState(false);
-
 
   // Hooks
   useEffect(() => {

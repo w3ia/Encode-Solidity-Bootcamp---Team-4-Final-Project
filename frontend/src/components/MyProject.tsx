@@ -1,4 +1,6 @@
 import styles from "../styles/MyProject.module.css";
+import MyProjectInput from "./MyProjectInput";
+import MyProjectTable from "./MyProjectTable";
 export default function MyProject() {
 	return (
 		<div className={styles.container}>
@@ -6,10 +8,9 @@ export default function MyProject() {
 				<h1>
 					<span>My Project</span>
 				</h1>
-				<p>
-					To Do - List projects
-				</p>
 			</header>
+			<MyProjectTable />
+			<MyProjectInput />
 
 		</div>
 	);
