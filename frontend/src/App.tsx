@@ -70,7 +70,6 @@ const App = () => {
         <AppProvider>
           <MainLayout>
             <Home/>
-            <VotingPeriod/>
           </MainLayout>
         </AppProvider>
       </RainbowKitProvider>
