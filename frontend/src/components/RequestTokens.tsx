@@ -28,10 +28,10 @@ export const RequestTokens = () => {
             <div className="card w-96 bg-base-100 shadow-xl image-full">
                 <div className="card-body items-center text-center">
                     <h2 className="card-title">Request Voting Tokens Here</h2>
-                    <p>Input the amount of tokens you want.</p>
+                    <p>Input the amount of tokens you want and the address you want them sent to.</p>
                     <div className="card-actions justify-center">
-                    <input type="text" placeholder="Type here" className="input input-primary input-lg w-full max-w-xs bg-primary" onChange={(e) => setAmount(e.target.value)} value={amount}/>
-                    <input type="text" placeholder="Type here" className="input input-primary input-lg w-full max-w-xs bg-primary" onChange={(e) => setAddr(e.target.value)} value={addr}/>
+                    <input type="text" placeholder="Token Amount" className="input input-primary input-lg w-full max-w-xs bg-primary" onChange={(e) => setAmount(e.target.value)} value={amount}/>
+                    <input type="text" placeholder="Address" className="input input-primary input-lg w-full max-w-xs bg-primary" onChange={(e) => setAddr(e.target.value)} value={addr}/>
                     <button className="btn btn-primary" onClick={submitHandler}>Mint Now</button>
                     </div>
                 </div>
