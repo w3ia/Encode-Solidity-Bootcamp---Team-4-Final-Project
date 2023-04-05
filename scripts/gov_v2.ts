@@ -81,15 +81,15 @@ async function executeProject(DiplomaGuildC: DiplomaGuildNFT, govC: DiplomaGuild
     let descriptionHash = ethers.utils.id(projectURL);
     let transferCalldata = DiplomaGuildC.interface.encodeFunctionData(`safeMint`, [studentAddress, diplomaURI]);
     
-    const queueTx = await govC.execute(
+    const executeTx = await govC.execute(
       [DiplomaGuildC.address],
       [0],
       [transferCalldata],
       descriptionHash,
     );
-    const queueTxReceipt = await queueTx.wait();
-    console.log(`Proposal executed at block: ${queueTxReceipt.blockNumber}`);
-}
+    const executeTxReceipt = await executeTx.wait();
+    console.log(`Proposal executed at block: ${executeTxReceipt.blockNumber} with hash ${executeTxReceipt.transactionHash}`);
+  }
 
 // vote for project
 async function vote(voter: SignerWithAddress, propId: BigNumberish, govC: DiplomaGuildGov) {
