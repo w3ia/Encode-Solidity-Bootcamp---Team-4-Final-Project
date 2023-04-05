@@ -1,35 +1,3 @@
-// import {
-//   Connect,
-//   UserBalanceDisplay,
-//   BuyTokens,
-//   Bet,
-//   OpenBets,
-//   CloseLottery,
-//   ReturnTokens,
-//   PrizeWithdraw,
-//   OwnerWithdraw
-// } from './components/ExportComponents';
-// import {
-//   BetState,
-//   PaymentToken,
-//   PurchaseRatio,
-//   BetPrice,
-//   BetFee,
-//   PrizePool,
-//   OwnerPool,
-//   BetsClosingTime
-// } from './components/stateVarReads/ExportStateVarReads';
-// import FadeCard from './components/FadeCard';
-// import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
-// import { configureChains, createClient, WagmiConfig, useAccount } from 'wagmi';
-// import { sepolia } from 'wagmi/chains';
-// import { infuraProvider } from 'wagmi/providers/infura';
-// import Container from '@mui/material/Container';
-// import { Grid } from '@mui/material';
-// import '@rainbow-me/rainbowkit/styles.css';
-// import './App.css';
-
-
 import "../src/styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";

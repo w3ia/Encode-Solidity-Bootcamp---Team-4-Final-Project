@@ -1,15 +1,3 @@
-import {
-  DiplomaGuildGov,
-  DiplomaGuildGov__factory,
-  DiplomaGuildTimeLock,
-  DiplomaGuildTimeLock__factory,
-  MarkingToken,
-  MarkingToken__factory,
-  DiplomaGuildNFT,
-  DiplomaGuildNFT__factory,
-  DiplomaGuildProps,
-  DiplomaGuildProps__factory,
-} from "../../../typechain-types";
 import { BigNumberish, ethers } from "ethers";
 import React, { useState } from "react";
 import style from "../styles/MyProjectInput.module.css";
@@ -25,105 +13,74 @@ import {
 import {
   GOV_CONTRACT_ADDRESS,
   GOV_ABI,
+  NFT_CONTRACT_ADDRESS,
+  NFT_ABI,
   PRO_CONTRACT_ADDRESS,
   PRO_ABI,
 } from "../constants/contracts";
-import { PromiseOrValue } from "../../../typechain-types/common";
 
 const diplomaURI =
   "ipfs://bafkreihqfo2yd4o7fjveg5bptjgaobwqdd7nk7i7l7a6xmm5s25lrzabjm";
 
-// Submit project (proposal)
-async function submitProject(
-  DiplomaGuildC: DiplomaGuildNFT,
-  govC: DiplomaGuildGov,
-  projectURL: string,
-  studentAddress: string
-) {
-  let transferCalldata = DiplomaGuildC.interface.encodeFunctionData(
-    `safeMint`,
-    [studentAddress, diplomaURI]
-  );
-
-  let proposeTx = await govC.propose(
-    [DiplomaGuildC.address],
-    [0],
-    [transferCalldata],
-    projectURL
-  );
-
-  let receipt = await proposeTx.wait();
-  let propId = receipt.events?.[0]?.args?.proposalId;
-  let proposer = receipt.events?.[0]?.args?.proposer;
-  let description = receipt.events?.[0]?.args?.description;
-
-  let dataObject = {
-    propId: propId,
-    proposer: proposer,
-    description: description,
-  };
-  console.log(dataObject);
-  return dataObject;
-}
-
-async function storeProposal(
-  data: {
-    propId: BigNumberish;
-    proposer: string;
-    description: string;
-  },
-  proposal: DiplomaGuildProps
-) {
-  let propTx = await proposal.addProposal(
-    data.propId,
-    data.proposer,
-    data.description
-  );
-  let propTxReceipt = await propTx.wait();
-  console.log("propTxReceipt:");
-  console.log(propTxReceipt);
-}
-
 export default function MyProjectInput() {
-  let govC: DiplomaGuildGov;
-  let DiplomaGuildC: DiplomaGuildNFT;
-  let proposalC: DiplomaGuildProps;
   //   const [projectData, setProjectData] = useState([]);
   const [formInput, setFormInput] = useState("");
   const { address, isConnected, isDisconnected } = useAccount();
 
-  //   const {
-  //     data: proData,
-  //     isError: isProError,
-  //     isLoading: isProLoading,
-  //   } = useContractRead({
-  //     address: PRO_CONTRACT_ADDRESS,
-  //     abi: PRO_ABI,
-  //     functionName: "getAllProposals",
-  //   });
+  const { data: signer, isError, isLoading } = useSigner();
 
-  //   setProjectData(proData);
+  const nftC = useContract({
+    address: NFT_CONTRACT_ADDRESS,
+    abi: NFT_ABI,
+    signerOrProvider: signer,
+  });
+
+  const govC = useContract({
+    address: GOV_CONTRACT_ADDRESS,
+    abi: GOV_ABI,
+    signerOrProvider: signer,
+  });
+
+  const propC = useContract({
+    address: PRO_CONTRACT_ADDRESS,
+    abi: PRO_ABI,
+    signerOrProvider: signer,
+  });
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // submit proposal
-    // if (address) {
-    //   let proposalData = await submitProject(
-    //     DiplomaGuildC,
-    //     govC,
-    //     formInput,
-    //     address
-    //   );
+    if (nftC && govC && propC) {
+      let projectURL = formInput;
+      let transferCalldata = nftC.interface.encodeFunctionData(`safeMint`, [
+        address,
+        diplomaURI,
+      ]);
 
-    //   await storeProposal(proposalData, proposalC);
-    // }
+      let proposeTx = await govC.propose(
+        [nftC.address],
+        [0],
+        [transferCalldata],
+        projectURL
+      );
 
-    console.log(DiplomaGuildC,
-      govC,
-      formInput,
-      address)
+        let receiptProposeTx = await proposeTx.wait();
+        let propId = receiptProposeTx.events?.[0]?.args?.proposalId;
+        let proposer = receiptProposeTx.events?.[0]?.args?.proposer;
+        let description = receiptProposeTx.events?.[0]?.args?.description;
+        console.log(`Proposal ID is: ${propId}`);
+        console.log(`Proposer is: ${proposer}`);
+        console.log(`Description is: ${description}`);
 
+        let storePropTx = await propC.addProposal(
+          propId,
+          description,
+          proposer
+        );
+        let receiptStorePropTx = await storePropTx.wait();
+        console.log('receiptStorePropTx')
+        console.log(receiptStorePropTx)
+    }
 
     // submit proposal;
     alert(`Submitting Proposal with IPFS url: ${formInput}`);
