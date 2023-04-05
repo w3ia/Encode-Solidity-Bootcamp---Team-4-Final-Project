@@ -72,7 +72,8 @@ async function queueProject(DiplomaGuildC: DiplomaGuildNFT, govC: DiplomaGuildGo
       descriptionHash,
     );
     const queueTxReceipt = await queueTx.wait();
-    console.log(`Proposal queued at block: ${queueTxReceipt.blockNumber}`);
+    console.log
+    console.log(`Proposal queued at block: ${queueTxReceipt.blockNumber} with hash ${queueTxReceipt.transactionHash}`);
 }
 
 // Execute project (proposal)
