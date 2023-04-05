@@ -26,11 +26,10 @@ export const RequestTokens = () => {
     if (isConnected) {
         return (
             <div className="card w-96 bg-base-100 shadow-xl image-full">
-                <figure><img src="/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg" alt="Shoes" /></figure>
-                <div className="card-body">
+                <div className="card-body items-center text-center">
                     <h2 className="card-title">Request Voting Tokens Here</h2>
-                    <p>Input the amount of tokens you want to request.</p>
-                    <div className="card-actions justify-end">
+                    <p>Input the amount of tokens you want.</p>
+                    <div className="card-actions justify-center">
                     <input type="text" placeholder="Type here" className="input input-primary input-lg w-full max-w-xs bg-primary" onChange={(e) => setAmount(e.target.value)} value={amount}/>
                     <input type="text" placeholder="Type here" className="input input-primary input-lg w-full max-w-xs bg-primary" onChange={(e) => setAddr(e.target.value)} value={addr}/>
                     <button className="btn btn-primary" onClick={submitHandler}>Mint Now</button>
