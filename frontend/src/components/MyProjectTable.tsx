@@ -23,7 +23,7 @@ export default function MyProjectTable() {
         <tbody>
           {exampleData.map((proposal) => {
             return (
-              <tr className="hover">
+              <tr key={proposal.id} className="hover">
                 <th>{proposal.id}</th>
                 <td>{proposal.url}</td>
                 <td>{proposal.status}</td>

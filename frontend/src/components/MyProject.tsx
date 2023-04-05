@@ -11,7 +11,6 @@ export default function MyProject() {
 			</header>
 			<MyProjectTable />
 			<MyProjectInput />
-
 		</div>
 	);
 }
