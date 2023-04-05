@@ -83,7 +83,7 @@ export default function MyProjectInput() {
     }
 
     // submit proposal;
-    alert(`Submitting Proposal with IPFS url: ${formInput}`);
+    alert(`Proposal with IPFS url: ${formInput} has been submitted successfully.`);
     setFormInput("");
   };
 

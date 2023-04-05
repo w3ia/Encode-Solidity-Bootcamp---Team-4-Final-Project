@@ -1,7 +1,5 @@
-import styles from "../styles/MyProject.module.css";
+import styles from "../styles/Cohort.module.css";
 import CohortProjectTable from "./CohortProjectTable";
-import MyProjectInput from "./MyProjectInput";
-import MyProjectTable from "./MyProjectTable";
 import { Vote } from "./Vote";
 export default function Cohort() {
 	return (
@@ -14,7 +12,7 @@ export default function Cohort() {
       <div>
 			  <CohortProjectTable />
       </div>
-      <div>
+      <div className="m-5">
         <Vote/>
       </div>
 		</div>
