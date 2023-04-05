@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import AppContext from "../components/store/AppContext";
 import { useAccount } from "wagmi";
+import { Vote } from "./Vote";
 
 
 export default function MainPage() {
@@ -30,12 +31,15 @@ export default function MainPage() {
         <div>
           <RequestTokens />
         </div>
-          <div className={styles.button}>
-            <a onClick={() => AppCtx.setActiveLink("MyProject")}>My Project</a>
-          </div>
-          <div className={styles.button}>
-            <a onClick={() => AppCtx.setActiveLink("Cohort")}>Cohort</a>
-          </div>
+        <div className={styles.button}>
+          <a onClick={() => AppCtx.setActiveLink("MyProject")}>My Project</a>
+        </div>
+        <div className={styles.button}>
+          <a onClick={() => AppCtx.setActiveLink("Cohort")}>Cohort</a>
+        </div>
+        <div>
+          <Vote />
+        </div>
       </div>
     </div>
   );
