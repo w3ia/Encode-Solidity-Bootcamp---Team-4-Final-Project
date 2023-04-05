@@ -37,9 +37,6 @@ export default function MainPage() {
         <div className={styles.button}>
           <a onClick={() => AppCtx.setActiveLink("Cohort")}>Cohort</a>
         </div>
-        <div>
-          <Vote />
-        </div>
       </div>
     </div>
   );

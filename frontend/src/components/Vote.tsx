@@ -9,7 +9,6 @@ export const Vote = () => {
     const { address, isConnected, isDisconnected } = useAccount()
     const { data: signer, isError } = useSigner()
     const formatVote = parseInt(vote)
-    // const formatEtherAmount = parseInt(amount) > 0 ? ethers.utils.parseEther(amount) : ethers.utils.parseEther("0");
 
     const govC = useContract({
         address: GOV_CONTRACT_ADDRESS,
