@@ -21,7 +21,7 @@ export const Vote = () => {
         if(govC) {
             const voteTx = await govC.castVote(project, formatVote)
             const receiptTx = await voteTx.wait()
-            console.log(`Tokens minted at block: ${receiptTx.blockNumber}`)
+            console.log(`Voting succeeded at block: ${receiptTx.blockNumber}`)
         }
     }
     if (isConnected) {
@@ -31,8 +31,8 @@ export const Vote = () => {
                     <h2 className="card-title">Vote Here</h2>
                     <p>Input the proposal ID you want to vote for and if you abstain (0), are for it (1), or against (2).</p>
                     <div className="card-actions justify-center">
-                    <input type="text" placeholder="Token Amount" className="input input-primary input-lg w-full max-w-xs bg-primary" onChange={(e) => setProject(e.target.value)} value={project}/>
-                    <input type="text" placeholder="Address" className="input input-primary input-lg w-full max-w-xs bg-primary" onChange={(e) => setVote(e.target.value)} value={vote}/>
+                    <input type="text" placeholder="Project ID" className="input input-primary input-lg w-full max-w-xs bg-primary" onChange={(e) => setProject(e.target.value)} value={project}/>
+                    <input type="text" placeholder="For, against, or abstain." className="input input-primary input-lg w-full max-w-xs bg-primary" onChange={(e) => setVote(e.target.value)} value={vote}/>
                     <button className="btn btn-primary" onClick={submitHandler}>Vote Now</button>
                     </div>
                 </div>
