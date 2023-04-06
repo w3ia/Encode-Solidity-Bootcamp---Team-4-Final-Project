@@ -109,12 +109,14 @@ export default function MyProjectTable() {
                     {proposal.student}
                   </td>
                   <td className="text-center whitespace-normal">
-                    <MyProjectStatus
-                      projectId={proposal.id}
-                      projectUrl={proposal.url}
-                      studentAddress={proposal.student}
-                      mode={true}
-                    />
+                    {proposal.id && (
+                      <MyProjectStatus
+                        projectId={proposal.id}
+                        projectUrl={proposal.url}
+                        studentAddress={proposal.student}
+                        mode={true}
+                      />
+                    )}
                   </td>
                 </tr>
               );

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import styles from "../../styles/Navbar.module.css";
+import styles from "../styles/Navbar.module.css";
 import AppContext from "../components/store/AppContext";
 import { useAccount } from "wagmi";
 
@@ -23,7 +23,7 @@ export default function Navbar() {
         <a className="btn btn-ghost normal-case text-xl">Diploma Guild</a>
       </div>
       {isConnected && (
-        <div>
+        <div className={styles.navBarLinks}>
           <ul className="menu menu-horizontal px-1">
             <li>
               <a onClick={() => AppCtx.setActiveLink("Main")}>Main</a>

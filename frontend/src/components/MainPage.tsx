@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import AppContext from "../components/store/AppContext";
 import { useAccount } from "wagmi";
-import { Vote } from "./Vote";
+import Vote from "./Vote";
 
 
 export default function MainPage() {
