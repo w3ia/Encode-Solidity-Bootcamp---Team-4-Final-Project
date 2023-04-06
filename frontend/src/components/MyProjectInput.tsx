@@ -1,5 +1,5 @@
 import { BigNumberish, ethers } from "ethers";
-import React, { useState } from "react";
+import React, { useState, SetStateAction } from "react";
 import style from "../styles/MyProjectInput.module.css";
 import {
   useAccount,
@@ -19,10 +19,14 @@ import {
   PRO_ABI,
 } from "../constants/contracts";
 
+interface Props {
+  waitingTx: (action: SetStateAction<string>) => void;
+}
+
 const diplomaURI =
   "ipfs://bafkreihqfo2yd4o7fjveg5bptjgaobwqdd7nk7i7l7a6xmm5s25lrzabjm";
 
-export default function MyProjectInput() {
+export default function MyProjectInput({ waitingTx }: Props) {
   //   const [projectData, setProjectData] = useState([]);
   const [formInput, setFormInput] = useState("");
   const { address, isConnected, isDisconnected } = useAccount();
@@ -50,40 +54,76 @@ export default function MyProjectInput() {
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (nftC && govC && propC) {
-      let projectURL = formInput;
-      let transferCalldata = nftC.interface.encodeFunctionData(`safeMint`, [
-        address,
-        diplomaURI,
-      ]);
+    // enable loading alert
+    waitingTx(
+      "Please wait a moment while we are creating your project submission request."
+    );
 
-      let proposeTx = await govC.propose(
-        [nftC.address],
-        [0],
-        [transferCalldata],
-        projectURL
-      );
+    try {
+      if (nftC && govC && propC) {
+        let projectURL = formInput;
+        let transferCalldata = nftC.interface.encodeFunctionData(`safeMint`, [
+          address,
+          diplomaURI,
+        ]);
+
+        let proposeTx = await govC.propose(
+          [nftC.address],
+          [0],
+          [transferCalldata],
+          projectURL
+        );
+
+        waitingTx(
+          "Almost there! Please continue waiting to provide final signature."
+        );
 
         let receiptProposeTx = await proposeTx.wait();
         let propId = receiptProposeTx.events?.[0]?.args?.proposalId;
         let proposer = receiptProposeTx.events?.[0]?.args?.proposer;
         let description = receiptProposeTx.events?.[0]?.args?.description;
-        console.log(`Proposal ID is: ${propId}`);
-        console.log(`Proposer is: ${proposer}`);
-        console.log(`Description is: ${description}`);
+        // console.log(`Proposal ID is: ${propId}`);
+        // console.log(`Proposer is: ${proposer}`);
+        // console.log(`Description is: ${description}`);
 
+        // update loading alert
+        waitingTx("Request created, waiting for final signature...");
         let storePropTx = await propC.addProposal(
           propId,
           description,
           proposer
         );
         let receiptStorePropTx = await storePropTx.wait();
-        console.log('receiptStorePropTx')
-        console.log(receiptStorePropTx)
+        console.log("receiptStorePropTx");
+        console.log(receiptStorePropTx);
+
+        const displayErrorAlert = (message: string, seconds: number) => {
+          waitingTx(message); // display the message
+
+          setTimeout(() => {
+            waitingTx("");
+          }, seconds * 1000);
+        };
+
+        displayErrorAlert(
+          `Proposal with IPFS url: ${formInput} has been submitted successfully.`,
+          5
+        );
+      }
+    } catch (error) {
+      console.log(error);
+
+      const displayErrorAlert = (message: string, seconds: number) => {
+        waitingTx(message); // display the message
+
+        setTimeout(() => {
+          waitingTx("");
+        }, seconds * 1000);
+      };
+
+      displayErrorAlert("Transaction not completed", 5);
     }
 
-    // submit proposal;
-    alert(`Proposal with IPFS url: ${formInput} has been submitted successfully.`);
     setFormInput("");
   };
 

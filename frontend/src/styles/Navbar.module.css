@@ -1,4 +1,8 @@
-
+@media (min-width: 768px) {
+	div.navBarLinks {
+	  margin-left: 110px; /* Replace 20px with the desired margin value */
+	}
+  }
 
 .navbar {
 	display: flex;

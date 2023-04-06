@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  useContract,
-  useSigner,
-} from "wagmi";
-import {
-  PRO_CONTRACT_ADDRESS,
-  PRO_ABI,
-} from "../constants/contracts";
+import { useContract, useSigner } from "wagmi";
+import { PRO_CONTRACT_ADDRESS, PRO_ABI } from "../constants/contracts";
 import styles from "../styles/MyProjectTable.module.css";
 import MyProjectStatus from "./MyProjectStatus";
 
@@ -35,7 +29,7 @@ export default function CohortProjectTable() {
           student: item[2],
         };
       });
-      setTableData(object)
+      setTableData(object);
     }
   };
 
@@ -63,9 +57,17 @@ export default function CohortProjectTable() {
                   <td className="whitespace-nowrap overflow-x-scroll">
                     {proposal.id}
                   </td>
-                  <td className="whitespace-nowrap overflow-x-scroll">{proposal.url}</td>
-                  <td className="whitespace-nowrap overflow-x-scroll">{proposal.student}</td>
-                  <td className="text-center"><MyProjectStatus projectId={proposal.id} mode={false}/></td>
+                  <td className="whitespace-nowrap overflow-x-scroll">
+                    {proposal.url}
+                  </td>
+                  <td className="whitespace-nowrap overflow-x-scroll">
+                    {proposal.student}
+                  </td>
+                  <td className="text-center">
+                    {proposal.id && (
+                      <MyProjectStatus projectId={proposal.id} mode={false} />
+                    )}
+                  </td>
                 </tr>
               );
             })}

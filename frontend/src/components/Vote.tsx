@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SetStateAction } from "react";
 import { ethers, Signer } from "ethers";
 import {
   useAccount,
@@ -7,13 +7,14 @@ import {
   useContractWrite,
   useSigner,
 } from "wagmi";
-import {
-  GOV_CONTRACT_ADDRESS,
-  GOV_ABI,
-} from "../constants/contracts";
+import { GOV_CONTRACT_ADDRESS, GOV_ABI } from "../constants/contracts";
 import { VoteTokens } from "./stateVars/VoteTokens";
 
-export const Vote = () => {
+interface Props {
+  waitingTx: (action: SetStateAction<string>) => void;
+}
+
+export default function Vote({ waitingTx }: Props) {
   const [vote, setVote] = React.useState("");
   const [project, setProject] = React.useState("");
   const { address, isConnected, isDisconnected } = useAccount();
@@ -28,10 +29,38 @@ export const Vote = () => {
 
   async function submitHandler() {
     if (govC) {
-      const voteTx = await govC.castVote(project, formatVote);
-      const receiptTx = await voteTx.wait();
-      console.log(`Voting succeeded at block: ${receiptTx.blockNumber}`);
+      try {
+        // enable loading alert
+        waitingTx("Please wait a moment while your review is being processed.");
+        const voteTx = await govC.castVote(project, formatVote);
+        const receiptTx = await voteTx.wait();
+        console.log(`Voting succeeded at block: ${receiptTx.blockNumber}`);
+
+        const displayErrorAlert = (message: string, seconds: number) => {
+          waitingTx(message); // display the message
+
+          setTimeout(() => {
+            waitingTx("");
+          }, seconds * 1000);
+        };
+
+        displayErrorAlert("Your review was submitted successfully", 5);
+      } catch (error) {
+        console.log(error);
+
+        const displayErrorAlert = (message: string, seconds: number) => {
+          waitingTx(message); // display the message
+
+          setTimeout(() => {
+            waitingTx("");
+          }, seconds * 1000);
+        };
+
+        displayErrorAlert("Transaction not completed", 5);
+      }
     }
+    setVote("");
+    setProject("");
   }
   if (isConnected) {
     return (
@@ -70,4 +99,4 @@ export const Vote = () => {
     );
   }
   return <div>Not Connected</div>;
-};
+}

@@ -47,20 +47,36 @@ export default function MintDiploma({
   });
 
   const mintHandler = async () => {
+    alert("Mint request has been submitted.");
     async function getState() {
       if (govC) {
-        const response = await axios.post(`${API_BASE_URL}queue-and-execute`, {
-          projectURL: projectUrl,
-          studentAddress: studentAddress
-        });
-        console.log(response);
+        try {
+          const response = await axios.post(
+            `${API_BASE_URL}queue-and-execute`,
+            {
+              projectURL: projectUrl,
+              studentAddress: studentAddress,
+            }
+          );
+          alert(
+            "Almost there! Please wait a few minutes, then check your wallet for the DiplomaGuild NFT."
+          );
+          console.log(response);
+        } catch (error) {
+          console.log("Transaction Error: ");
+          console.log(error);
+        }
       }
     }
     getState();
   };
   if (projectState) {
     if (PROJECT_STATES[projectState] === "Succeeded") {
-      return <button onClick={mintHandler} className="btn btn-outline btn-secondary">Mint Diploma</button>;
+      return (
+        <button onClick={mintHandler} className="btn btn-outline btn-secondary">
+          Mint Diploma
+        </button>
+      );
     }
     if (PROJECT_STATES[projectState] === "Queued") {
       return (
@@ -70,11 +86,7 @@ export default function MintDiploma({
       );
     }
     if (PROJECT_STATES[projectState] === "Executed") {
-      return (
-        <div>
-          DiplomaGuild NFT Minted.
-        </div>
-      );
+      return <div>DiplomaGuild NFT Minted.</div>;
     }
   }
 
