@@ -10,9 +10,13 @@ import {
   useSigner,
 } from "wagmi";
 import { GOV_CONTRACT_ADDRESS, GOV_ABI } from "../constants/contracts";
+import MintDiploma from "./MintDiploma";
 
 interface Props {
   projectId?: string;
+  projectUrl?: string;
+  studentAddress?: string;
+  mode?: boolean;
 }
 
 const PROJECT_STATES = [
@@ -26,10 +30,16 @@ const PROJECT_STATES = [
   "Executed",
 ];
 
-export default function MyProjectStatus({ projectId }: Props) {
+export default function MyProjectStatus({
+  projectId,
+  projectUrl,
+  studentAddress,
+  mode,
+}: Props) {
   const [projectState, setProjectState] = useState("");
   const { data: signer, isError, isLoading } = useSigner();
   const { address, isConnected, isDisconnected } = useAccount();
+
 
   const govC = useContract({
     address: GOV_CONTRACT_ADDRESS,
@@ -41,13 +51,22 @@ export default function MyProjectStatus({ projectId }: Props) {
     async function getState() {
       if (govC) {
         let state = await govC.state(projectId);
-        console.log(`state of project: ${projectId}`);
-        console.log(state);
         setProjectState(state);
       }
     }
     getState();
   }, [govC, projectId]);
 
-  return <div>{PROJECT_STATES[Number(projectState)]}</div>;
+  return (
+    <>
+      <div>Status: {PROJECT_STATES[Number(projectState)]}</div>
+      {mode && <div>
+        <MintDiploma
+          projectState={projectState}
+          projectUrl={projectUrl}
+          studentAddress={studentAddress}
+        />
+      </div>}
+    </>
+  );
 }

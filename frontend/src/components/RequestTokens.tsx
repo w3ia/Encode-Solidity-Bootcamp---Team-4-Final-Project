@@ -10,7 +10,7 @@ import {
 import { FT_CONTRACT_ADDRESS, FT_ABI } from "../constants/contracts";
 
 export const RequestTokens = () => {
-  const [amount, setAmount] = React.useState("0");
+  const [amount, setAmount] = React.useState("");
   const [addr, setAddr] = React.useState("");
   const { address, isConnected, isDisconnected } = useAccount();
   const { data: signer, isError } = useSigner();
@@ -40,7 +40,7 @@ export const RequestTokens = () => {
     return (
       <div className="card w-96 bg-base-100 shadow-xl image-full">
         <div className="card-body items-center text-center">
-          <h2 className="card-title">Request Voting Tokens Here</h2>
+          <h2 className="card-title">Request Marking Tokens Here</h2>
           <p>
             Input the amount of tokens you want and the address you want them
             sent to.

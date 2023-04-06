@@ -13,7 +13,7 @@ import { GOV_CONTRACT_ADDRESS, GOV_ABI } from "../constants/contracts";
 import axios from "axios";
 
 interface Props {
-  projectState?: string;
+  projectState?: any;
   projectUrl?: string;
   studentAddress?: string;
 }
@@ -58,16 +58,17 @@ export default function MintDiploma({
     }
     getState();
   };
-
-  if (projectState === "Succeeded") {
-    return <button onClick={mintHandler}>Minting Diploma</button>;
-  }
-  if (projectState === "Queued" || projectState === "Executed") {
-    return (
-      <div>
-        Diploma is being minted. Check your wallet address in a few minutes.
-      </div>
-    );
+  if (projectState) {
+    if (PROJECT_STATES[projectState] === "Succeeded") {
+      return <button onClick={mintHandler} className="btn btn-outline btn-secondary">Mint Diploma</button>;
+    }
+    if (PROJECT_STATES[projectState] === "Queued" || PROJECT_STATES[projectState] === "Executed") {
+      return (
+        <div>
+          Diploma is being minted. Check your wallet address in a few minutes.
+        </div>
+      );
+    }
   }
 
   return <div>Project has not met requirements for an NFT Diploma.</div>;

@@ -92,7 +92,7 @@ export default function MyProjectTable() {
               <th className="w-1/3">ID</th>
               <th className="w-1/4">IPFS URL</th>
               <th className="w-1/3">Student</th>
-              <th className="w-1/4">Project Status</th>
+              <th className="w-1/4">Project</th>
             </tr>
           </thead>
           <tbody>
@@ -102,11 +102,20 @@ export default function MyProjectTable() {
                   <td className="whitespace-nowrap overflow-x-scroll">
                     {proposal.id}
                   </td>
-                  <td className="whitespace-nowrap overflow-x-scroll">{proposal.url}</td>
+                  <td className="whitespace-nowrap overflow-x-scroll">
+                    {proposal.url}
+                  </td>
                   <td className="whitespace-nowrap overflow-x-scroll">
                     {proposal.student}
                   </td>
-                  <td className="text-center"><MyProjectStatus projectId={proposal.id}/></td>
+                  <td className="text-center whitespace-normal">
+                    <MyProjectStatus
+                      projectId={proposal.id}
+                      projectUrl={proposal.url}
+                      studentAddress={proposal.student}
+                      mode={true}
+                    />
+                  </td>
                 </tr>
               );
             })}

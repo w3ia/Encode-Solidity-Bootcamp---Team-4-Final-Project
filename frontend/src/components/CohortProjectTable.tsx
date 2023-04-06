@@ -1,19 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { ethers } from "ethers";
 import {
-  useAccount,
   useContract,
-  usePrepareContractWrite,
-  useContractWrite,
-  useContractReads,
-  useContractRead,
   useSigner,
 } from "wagmi";
 import {
-  GOV_CONTRACT_ADDRESS,
-  GOV_ABI,
-  NFT_CONTRACT_ADDRESS,
-  NFT_ABI,
   PRO_CONTRACT_ADDRESS,
   PRO_ABI,
 } from "../constants/contracts";
@@ -63,7 +53,7 @@ export default function CohortProjectTable() {
               <th className="w-1/3">ID</th>
               <th className="w-1/4">IPFS URL</th>
               <th className="w-2/5">Student</th>
-              <th className="w-1/4">Project Status</th>
+              <th className="w-1/4">Project</th>
             </tr>
           </thead>
           <tbody>
@@ -75,7 +65,7 @@ export default function CohortProjectTable() {
                   </td>
                   <td className="whitespace-nowrap overflow-x-scroll">{proposal.url}</td>
                   <td className="whitespace-nowrap overflow-x-scroll">{proposal.student}</td>
-                  <td className="text-center"><MyProjectStatus projectId={proposal.id}/></td>
+                  <td className="text-center"><MyProjectStatus projectId={proposal.id} mode={false}/></td>
                 </tr>
               );
             })}
