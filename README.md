@@ -177,7 +177,7 @@ Project was built and tested against:
 	 ``npm run start``
 - App will be accessible via http://localhost:3000/
 
-## Built by:
+## Team:
 
 Built for the [Encode Solidity Bootcamp 2023](https://www.encode.club/solidity-bootcamps) by:
 
