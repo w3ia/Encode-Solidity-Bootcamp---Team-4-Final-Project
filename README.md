@@ -1,7 +1,5 @@
 # DiplomaGuild
 
-  
-
 ## Project Description
 
 A [Peer Assessment](https://en.wikipedia.org/wiki/Peer_assessment) DAO where students submit their project work for review/marking by other students.
@@ -64,6 +62,7 @@ DiplomaNFT -> Student: <--Transfer Diploma NFT to student
 ### API Layer
 
 To faciliate the Timelock aspect of the DAO i.e. Queuing and Execution, an API layer is implemented with the following single end-point that will be called by the Application's front-end:
+
     POST /queue-and-lock
     
     Request Body:
@@ -145,7 +144,7 @@ UI design/wireframes desgins are available from UI design/wireframes desgins are
 
 > TODO: How to setup project locally and run it.
 
-## Team:
+## Built by:
 
 Built for the [Encode Solidity Bootcamp 2023](https://www.encode.club/solidity-bootcamps) by:
 
