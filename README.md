@@ -34,7 +34,7 @@ The application utilises the following four smart contracts, which are all deplo
 
 - Timelock: [0xA2A60855DA9dd518E84937db9a2ed5b9b673d8A8](https://sepolia.etherscan.io/address/0xA2A60855DA9dd518E84937db9a2ed5b9b673d8A8)
   
-
+---
 The following is a sequence diagram outlining the contract interactions:
 
 ```mermaid
@@ -60,7 +60,7 @@ Timelock ->> DiplomaNFT: Mint Diploma NFT on behalf on passing student
 DiplomaNFT -> Student: <--Transfer Diploma NFT to student
 
 ```
-
+---
 ### API Layer
 
 To faciliate the Timelock aspect of the DAO i.e. Queuing and Execution, an API layer is implemented with the following single end-point that will be called by the Application's front-end:
@@ -88,13 +88,30 @@ The frontend layer is a react based web app that permits the following actions f
 UI design/wireframes desgins are available from UI design/wireframes desgins are available from [diploma_dao_ui_wireframe.pdf](https://github.com/w3ia/Encode-Solidity-Bootcamp---Team-4-Final-Project/blob/main/diploma_dao_ui_wireframe.pdf)
 
 ## Project Structure
+#### Smart Contracts (including deployment, test scripts and NFT assets):
 ```
-├── README.md
-├── artifacts
+├── contracts
+│ ├── DiplomaGuildGov.sol
+│ ├── DiplomaGuildNFT.sol
+│ ├── DiplomaGuildProps.sol
+│ ├── DiplomaGuildTimeLock.sol
+│ └── MarkingToken.sol
+├── scripts
+│ ├── deploy_gov.ts
+│ ├── generateNFTMetadata.ts
+│ ├── gov.ts
+│ ├── gov_v2.ts
+│ ├── readStorage.ts
+│ └── sepolia_dep.ts
+├── tests
+│ └── test.ts
 ├── assests
 │ ├── DiplomaGuild.png
 │ ├── DiplomaGuild.svg
 │ └── metadata.json
+```
+#### API/Backend:
+```
 ├── backend
 │ ├── dist
 │ ├── nest-cli.json
@@ -107,13 +124,9 @@ UI design/wireframes desgins are available from UI design/wireframes desgins are
 │ ├── tsconfig.json
 │ ├── vercel.json
 │ └── yarn.lock
-├── cache
-├── contracts
-│ ├── DiplomaGuildGov.sol
-│ ├── DiplomaGuildNFT.sol
-│ ├── DiplomaGuildProps.sol
-│ ├── DiplomaGuildTimeLock.sol
-│ └── MarkingToken.sol
+```
+#### Frontend:
+```
 ├── frontend
 │ ├── node_modules
 │ ├── package-lock.json
@@ -127,17 +140,6 @@ UI design/wireframes desgins are available from UI design/wireframes desgins are
 |── node_modules
 ├── package-lock.json
 ├── package.json
-├── scripts
-│ ├── deploy_gov.ts
-│ ├── generateNFTMetadata.ts
-│ ├── gov.ts
-│ ├── gov_v2.ts
-│ ├── readStorage.ts
-│ └── sepolia_dep.ts
-├── tests
-│ └── test.ts
-├── tsconfig.json
-└── yarn.lock
 ```
 ## Local Setup
 
