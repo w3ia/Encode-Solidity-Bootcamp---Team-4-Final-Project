@@ -144,7 +144,7 @@ UI design/wireframes desgins are available from UI design/wireframes desgins are
 
 > TODO: How to setup project locally and run it.
 
-## Built by:
+## Team:
 
 Built for the [Encode Solidity Bootcamp 2023](https://www.encode.club/solidity-bootcamps) by:
 
