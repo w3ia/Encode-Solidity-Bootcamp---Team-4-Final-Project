@@ -23,7 +23,7 @@ export default function Home() {
   if (!isConnected) {
     return <LoginComponent />;
   }
-  console.log(AppCtx.activeLink);
+  // console.log(AppCtx.activeLink);
 
   return (
     <div>
