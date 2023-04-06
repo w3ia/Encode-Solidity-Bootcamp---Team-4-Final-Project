@@ -1,5 +1,7 @@
 # DiplomaGuild
 
+  
+
 ## Project Description
 
 A [Peer Assessment](https://en.wikipedia.org/wiki/Peer_assessment) DAO where students submit their project work for review/marking by other students.
@@ -61,9 +63,9 @@ DiplomaNFT -> Student: <--Transfer Diploma NFT to student
 ---
 ### API Layer
 
-To faciliate the Timelock aspect of the DAO i.e. Queuing and Execution, an API layer is implemented with the following single end-point that will be called by the Application's front-end:
+To faciliate the Timelock aspect of the DAO i.e. Queuing and Execution, an API layer (running on https://nestjs.com/) is implemented with the following single end-point that will be called by the Application's front-end:
 
-    POST /queue-and-execute
+    POST /queue-and-lock
     
     Request Body:
     {
@@ -77,7 +79,7 @@ To faciliate the Timelock aspect of the DAO i.e. Queuing and Execution, an API l
     }
     
 ### Frontend Layer
-The frontend layer is a react based web app that permits the following actions for a user (Student):
+The frontend layer is a [react](https://react.dev/) based web app that permits the following actions for a user (Student):
 1. Login to application via their wallet.
 2. Request Marking tokens so that they may be able to review/mark projects.
 3. Submit their own project and track its progress.
@@ -141,10 +143,41 @@ UI design/wireframes desgins are available from UI design/wireframes desgins are
 ├── package.json
 ```
 ## Local Setup
+Project was built and tested against:
+* Node v19.7.0
+* Npm v9.5.0
 
-> TODO: How to setup project locally and run it.
+* **Ensure dotenv is setup with team 4 keys/signers** 
 
-## Team:
+#### Smart Contracts
+1. From the repo root run ``npm install``
+2. Once install is complete:
+	 * To **compile** the contract(s) run: 
+	 ``npx hardhat compile``
+	 * To **test** the contract(s) run: 
+	 ``npx hardhat --network hardhat test``
+	 * To **run** contracts run: 
+	 ``npx hardhat --network hardhat run scripts/gov_v2.ts``
+
+#### API Backend:
+ - Cd to the **backend** directory.
+ - Run ``npm install``
+ - Once install is complete:
+	 * To start in **dev** the run: 
+	 ``npm run start``
+	 * To run in **watch** mode run:
+	 ``npm run start:dev``
+- Swagger API will be accessible via http://localhost:3001/api
+	
+#### **Frontend:**
+ - Cd to the **frontend** directory.
+ - Run ``npm install``
+ - Once install is complete:
+	 * To start, run: 
+	 ``npm run start``
+- App will be accessible via http://localhost:3000/
+
+## Built by:
 
 Built for the [Encode Solidity Bootcamp 2023](https://www.encode.club/solidity-bootcamps) by:
 
