@@ -63,7 +63,7 @@ DiplomaNFT -> Student: <--Transfer Diploma NFT to student
 
 To faciliate the Timelock aspect of the DAO i.e. Queuing and Execution, an API layer is implemented with the following single end-point that will be called by the Application's front-end:
 
-    POST /queue-and-lock
+    POST /queue-and-execute
     
     Request Body:
     {
