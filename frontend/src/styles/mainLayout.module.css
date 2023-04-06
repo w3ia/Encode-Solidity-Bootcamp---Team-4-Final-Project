@@ -1,8 +1,16 @@
 footer.mainLayout {
-    padding: 2rem 0;
-    text-align: center;
-  }
-  
-  div.minWidth {
-    min-width: 675px;
-  }
+  padding: 2rem 0;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+div.minWidth {
+  min-width: 675px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main.mainContent {
+  flex: 1 0 auto;
+}

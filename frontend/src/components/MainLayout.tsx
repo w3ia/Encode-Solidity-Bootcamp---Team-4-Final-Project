@@ -10,7 +10,10 @@ export default function MainLayout({ children }: Props) {
   return (
     <div className={classes.minWidth}>
       <Navbar />
+      <main className={classes.mainContent}>
       {children}
+
+      </main>
       <footer className={classes.mainLayout}>
         <a
           href="https://diplomaDAO.xyz"
