@@ -4,7 +4,7 @@ import { ethers, Signer } from 'ethers';
 import * as govJson from './assets/DiplomaGuildGov.json';
 import * as diplomaJson from './assets/DiplomaGuildNFT.json';
 
-const GOVERNOR_ADDRESS = "0xEd10ebDE8833cC088b6565504C7E1Bb019947560"; 
+const GOVERNOR_ADDRESS = "0xE32B360509E8b673aD766CB96bFcA990b03E1c22"; 
 const DIPLOMAGUILD_ADDRESS = "0xa4a229194FfB476803543f5f31df870ADb424E3F"; 
 const DIPLOMA_URI = "ipfs://bafkreihqfo2yd4o7fjveg5bptjgaobwqdd7nk7i7l7a6xmm5s25lrzabjm";
 @Injectable()
