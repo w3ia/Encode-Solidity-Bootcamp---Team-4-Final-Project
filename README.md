@@ -33,7 +33,6 @@ The application utilises the following four smart contracts, which are all deplo
 - Governor: [0x04a1239B94779B7Ab1fe73D8D8a56b1f0Ff652ED](https://sepolia.etherscan.io/address/0x04a1239B94779B7Ab1fe73D8D8a56b1f0Ff652ED)
 
 - Timelock: [0xA2A60855DA9dd518E84937db9a2ed5b9b673d8A8](https://sepolia.etherscan.io/address/0xA2A60855DA9dd518E84937db9a2ed5b9b673d8A8)
-
   
 
 The following is a sequence diagram outlining the contract interactions:
@@ -46,9 +45,9 @@ Student ->> MarkingToken: Request and Delegate tokens
 
 MarkingToken -> Student: <-- Mint tokens and grant "voting" power
 
-Student ->> Governor: Review other students projects with delegated tokens.
+Student ->> Governor: Review other students projects with delegated tokens
 
-Student ->> Governor: Submit their own project for review
+Student ->> Governor: Submit own project for review
 
 Governor -> Student: <-- Return Project ID on successful submission
 
