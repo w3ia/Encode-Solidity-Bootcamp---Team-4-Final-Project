@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import style from "../styles/MyProjectInput.module.css";
+import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import {
   useAccount,
@@ -19,13 +18,9 @@ import {
   PRO_ABI,
 } from "../constants/contracts";
 import styles from "../styles/MyProjectTable.module.css";
+import MyProjectStatus from "./MyProjectStatus";
 
-const exampleData = [
-  { id: 1, url: "https://ipfs.nftstorage.link/", student: "Passed" },
-  { id: 2, url: "https://ipfs.nftstorage.link/", student: "" },
-  { id: 3, url: "https://ipfs.nftstorage.link/", student: "" },
-  { id: 4, url: "https://ipfs.nftstorage.link/", student: "" },
-];
+const exampleData = [{ id: "", url: "", student: "" }];
 
 export default function CohortProjectTable() {
   const [tableData, setTableData] = useState(exampleData);
@@ -50,34 +45,43 @@ export default function CohortProjectTable() {
           student: item[2],
         };
       });
-      console.log(object)
       setTableData(object)
     }
   };
 
+  useEffect(() => {
+    updateHandler();
+  }, []);
+
   return (
     <div className={styles.projectTable}>
-      <table className="table w-full">
-        {/* head */}
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>IPFS URL</th>
-            <th>Student</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tableData.map((proposal) => {
-            return (
-              <tr key={proposal.id} className="hover">
-                <th>{proposal.id}</th>
-                <td>{proposal.url}</td>
-                <td>{proposal.student}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <div className="max-w-screen-2xl mx-auto">
+        <table className="table table-fixed w-full">
+          {/* head */}
+          <thead>
+            <tr>
+              <th className="w-1/3">ID</th>
+              <th className="w-1/4">IPFS URL</th>
+              <th className="w-2/5">Student</th>
+              <th className="w-1/4">Project Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tableData.map((proposal) => {
+              return (
+                <tr key={proposal.id} className="hover">
+                  <td className="whitespace-nowrap overflow-x-scroll">
+                    {proposal.id}
+                  </td>
+                  <td className="whitespace-nowrap overflow-x-scroll">{proposal.url}</td>
+                  <td className="whitespace-nowrap overflow-x-scroll">{proposal.student}</td>
+                  <td className="text-center"><MyProjectStatus projectId={proposal.id}/></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
       <div className="flex justify-center">
         <button
           className="btn btn-outline btn-accent px-8 mt-5"
