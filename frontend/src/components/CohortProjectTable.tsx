@@ -18,6 +18,7 @@ import {
   PRO_ABI,
 } from "../constants/contracts";
 import styles from "../styles/MyProjectTable.module.css";
+import MyProjectStatus from "./MyProjectStatus";
 
 const exampleData = [{ id: "", url: "", student: "" }];
 
@@ -60,8 +61,9 @@ export default function CohortProjectTable() {
           <thead>
             <tr>
               <th className="w-1/3">ID</th>
-              <th className="w-1/3">IPFS URL</th>
-              <th className="w-1/3">Student</th>
+              <th className="w-1/4">IPFS URL</th>
+              <th className="w-2/5">Student</th>
+              <th className="w-1/4">Project Status</th>
             </tr>
           </thead>
           <tbody>
@@ -71,8 +73,9 @@ export default function CohortProjectTable() {
                   <td className="whitespace-nowrap overflow-x-scroll">
                     {proposal.id}
                   </td>
-                  <td>{proposal.url}</td>
-                  <td>{proposal.student}</td>
+                  <td className="whitespace-nowrap overflow-x-scroll">{proposal.url}</td>
+                  <td className="whitespace-nowrap overflow-x-scroll">{proposal.student}</td>
+                  <td className="text-center"><MyProjectStatus projectId={proposal.id}/></td>
                 </tr>
               );
             })}

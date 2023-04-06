@@ -40,6 +40,7 @@ export const Vote = () => {
       <div className="card w-96 bg-base-100 shadow-xl image-full">
         <div className="card-body items-center text-center">
           <h2 className="card-title">Vote Here</h2>
+          {/* Display Voting Power */}
           <VoteTokens />
           <p>
             Input the proposal ID you want to vote for and if you abstain (0),
