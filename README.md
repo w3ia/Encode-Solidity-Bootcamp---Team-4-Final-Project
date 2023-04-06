@@ -63,7 +63,7 @@ DiplomaNFT -> Student: <--Transfer Diploma NFT to student
 ---
 ### API Layer
 
-To faciliate the Timelock aspect of the DAO i.e. Queuing and Execution, an API layer (running on https://nestjs.com/) is implemented with the following single end-point that will be called by the Application's front-end:
+To facilitate the Timelock aspect of the DAO i.e. Queuing and Execution, an API layer (running on https://nestjs.com/) is implemented with the following single end-point that will be called by the Application's front-end:
 
     POST /queue-and-execute
     
