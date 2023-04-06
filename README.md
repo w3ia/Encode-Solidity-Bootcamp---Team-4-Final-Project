@@ -55,7 +55,7 @@ Student ->> Governor: If own project has passed, request Diploma
 
 Governor ->> Timelock: Queue and Execute successfully passed project
 
-Timelock ->> DiplomaNFT: Mint Diploma NFT on behalf on passing student
+Timelock ->> DiplomaNFT: Mint Diploma NFT on behalf of passing student
 
 DiplomaNFT -> Student: <--Transfer Diploma NFT to student
 
