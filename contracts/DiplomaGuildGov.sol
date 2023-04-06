@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.so
 contract DiplomaGuildGov is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction, GovernorTimelockControl {
     constructor(IVotes _token, TimelockController _timelock)
         Governor("DiplomaGuildGov")
-        GovernorSettings(0 /* 1 block */, 10 /* approx 36 secs */, 0) //Based on the default OpenZeppelin Wizard block time of 12 secs
+        GovernorSettings(0 /* 1 block */, 10 /* approx  2mins */, 0) //Based on the default OpenZeppelin Wizard block time of 12 secs
         // GovernorSettings(1 /* 1 block */, 50400 /* 1 week */, 0)
         GovernorVotes(_token)
         GovernorVotesQuorumFraction(1)
