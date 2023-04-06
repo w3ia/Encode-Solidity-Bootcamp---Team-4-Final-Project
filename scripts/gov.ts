@@ -132,7 +132,7 @@ async function main() {
     const quorum = await governorContract.quorum(8);
     console.log(`Quorum is: ${quorum}`)
     // check the block again
-    await mine(2);
+    await mine(20);
     const block = await time.latestBlock();
     console.log(`Block number before calling queue function is: ${block}`);
     // checking the voting period

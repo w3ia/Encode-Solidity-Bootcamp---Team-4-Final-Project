@@ -223,7 +223,7 @@ async function main() {
     
     // Fake the block creation - progess time
     console.log("Moving blocks forward...");
-    await mine(2);
+    await mine(20);
     let stateAfterMovingForward = await govC.state(propId);
     console.log(`proposal state after moving blocks forward: ${stateAfterMovingForward}`);
     if(stateAfterMovingForward == 4) console.log(`Project passed! Congratulations! minting Diploma NFT!`);
