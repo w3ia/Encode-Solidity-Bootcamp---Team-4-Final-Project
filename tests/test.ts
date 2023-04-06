@@ -16,23 +16,26 @@ const DIPLOMA_URI = "ipfs://bafkreihqfo2yd4o7fjveg5bptjgaobwqdd7nk7i7l7a6xmm5s25
 const PROJECT_URL = "https://github.com/w3ia/Encode-Solidity-Bootcamp---Team-4-Final-Project"
 
 describe('Diploma DAO Project', async function () {
+  // -------------------------------------------------------------------------------------------------------------------------
+  // ------------------------------------------------HELPER FUNCTIONS---------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------------
   async function setupAndDeployFixture() {
     // Setup accounts
     const [deployer, student1, student2] = await ethers.getSigners();
 
     // Deploy Marking Token contract
     const markingTokenCF = await ethers.getContractFactory("MarkingToken");
-    const markingTokenC = await markingTokenCF.deploy();
+    const markingTokenC: MarkingToken = await markingTokenCF.deploy();
     await markingTokenC.deployed();
 
     // Deploy Timelock contract
     const timelockCF = await ethers.getContractFactory("DiplomaGuildTimeLock");
-    const timelockC = await timelockCF.deploy(0, [deployer.address], [deployer.address], deployer.address);
+    const timelockC: DiplomaGuildTimeLock = await timelockCF.deploy(0, [deployer.address], [deployer.address], deployer.address);
     await timelockC.deployed();
 
     // Deploy Governor contract:
     const govCF = await ethers.getContractFactory("DiplomaGuildGov"); 
-    const govC = await govCF.deploy(markingTokenC.address, timelockC.address);
+    const govC: DiplomaGuildGov = await govCF.deploy(markingTokenC.address, timelockC.address);
     await govC.deployed();
 
     // Assign Timelock roles to Governor
@@ -41,7 +44,7 @@ describe('Diploma DAO Project', async function () {
 
     // Deploy NFT contract
     const diplomaGuildCF = await ethers.getContractFactory("DiplomaGuildNFT"); 
-    const DiplomaGuildC = await diplomaGuildCF.deploy();
+    const DiplomaGuildC: DiplomaGuildNFT = await diplomaGuildCF.deploy();
     await DiplomaGuildC.deployed();
 
     // Assign NFT roles to Timelock contract
@@ -69,28 +72,51 @@ describe('Diploma DAO Project', async function () {
   async function submitProject(DiplomaGuildC: DiplomaGuildNFT, govC: DiplomaGuildGov, projectURL: string, studentAddress: string): 
   Promise<string> {
     const transferCalldata = DiplomaGuildC.interface.encodeFunctionData(`safeMint`, [studentAddress, DIPLOMA_URI]);
-
     const proposeTx = await govC.propose(
         [DiplomaGuildC.address],
         [0],
         [transferCalldata],
         projectURL,
-      );
-      
+    );
     const receipt = await proposeTx.wait();
     return (receipt.events?.[0]?.args?.proposalId).toString();
   }
 
-  async function vote(voter: SignerWithAddress, propId: BigNumberish, govC: DiplomaGuildGov):
-  Promise<any> {
+  async function queueProject(DiplomaGuildC: DiplomaGuildNFT, govC: DiplomaGuildGov, projectURL: string, studentAddress: string) {
+    const descriptionHash = ethers.utils.id(projectURL);
+    const transferCalldata = DiplomaGuildC.interface.encodeFunctionData(`safeMint`, [studentAddress, DIPLOMA_URI]);
+    const queueTx = await govC.queue(
+      [DiplomaGuildC.address],
+      [0],
+      [transferCalldata],
+      descriptionHash,
+    );
+    await queueTx.wait();
+  }
+
+  async function executeProject(DiplomaGuildC: DiplomaGuildNFT, govC: DiplomaGuildGov, projectURL: string, studentAddress: string) {
+    const descriptionHash = ethers.utils.id(projectURL);
+    const transferCalldata = DiplomaGuildC.interface.encodeFunctionData(`safeMint`, [studentAddress, DIPLOMA_URI]);
+    const executeTx = await govC.execute(
+      [DiplomaGuildC.address],
+      [0],
+      [transferCalldata],
+      descriptionHash,
+    );
+    await executeTx.wait();
+  }
+  
+  async function vote(voter: SignerWithAddress, propId: BigNumberish, govC: DiplomaGuildGov) {
     let voteTx = await govC.connect(voter).castVote(propId, 1);  
     await voteTx.wait();
-    return await govC.state(propId);
   } 
 // -------------------------------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------------------------------
 
+// -------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------TESTS START-----------------------------------------------------------
+// -------------------------------------------------------------------------------------------------------------------------
   it('Student can request Marking Tokens', async function () {
     const { student1, markingTokenC} = await loadFixture(setupAndDeployFixture);
     let tokenBalanceAccount = await mintMarkingTokens(student1.address,markingTokenC);
@@ -107,63 +133,35 @@ describe('Diploma DAO Project', async function () {
 
   it('Student can submit their project for review/marking', async function () {
     const { student2, govC, DiplomaGuildC} = await loadFixture(setupAndDeployFixture);
-    const transferCalldata = DiplomaGuildC.interface.encodeFunctionData(`safeMint`, [student2.address, DIPLOMA_URI]);
-    const propID = submitProject(DiplomaGuildC, govC, PROJECT_URL, student2.address);
+    const propID = await submitProject(DiplomaGuildC, govC, PROJECT_URL, student2.address);
     expect(propID).not.be.undefined;
   });
 
   it('Student can mark (vote on) others project', async function () {
     const { student1, student2, markingTokenC, govC, DiplomaGuildC } = await loadFixture(setupAndDeployFixture);
-
-    const mintTx = await markingTokenC.mint(student1.address, MARKING_TOKEN_MINT);
-    await mintTx.wait();
-    const delegateTx = await markingTokenC.connect(student1).delegate(student1.address);
-    await delegateTx.wait();
-
-    const transferCalldata = DiplomaGuildC.interface.encodeFunctionData(`safeMint`, [student2.address, DIPLOMA_URI]);
-    const proposeTx = await govC.propose(
-        [DiplomaGuildC.address],
-        [0],
-        [transferCalldata],
-        PROJECT_URL,
-      );
-    const proposeTxReceipt = await proposeTx.wait();
-    const propID = proposeTxReceipt.events?.[0]?.args?.proposalId;
+    await mintMarkingTokens(student1.address,markingTokenC);
+    await delegate(student1, student1.address, markingTokenC);
+    const propID = await submitProject(DiplomaGuildC, govC, PROJECT_URL, student2.address);
 
     const beforeAfterVote = await govC.state(propID.toString());
     expect(beforeAfterVote).to.equal(0);
+
+    await vote(student1, propID, govC);
     
-    const voteTx = await govC.connect(student1).castVote(propID.toString(), 1);  
-    await voteTx.wait();
- 
     const stateAfterVote = await govC.state(propID.toString());
     expect(stateAfterVote).to.equal(1);
   });
 
   it('Project succesfully passes', async function () {
     const { student1, student2, markingTokenC, govC, DiplomaGuildC } = await loadFixture(setupAndDeployFixture);
+    await mintMarkingTokens(student1.address,markingTokenC);
+    await delegate(student1, student1.address, markingTokenC);
+    const propID = await submitProject(DiplomaGuildC, govC, PROJECT_URL, student2.address);
 
-    const mintTx = await markingTokenC.mint(student1.address, MARKING_TOKEN_MINT);
-    await mintTx.wait();
-    const delegateTx = await markingTokenC.connect(student1).delegate(student1.address);
-    await delegateTx.wait();
-
-    const transferCalldata = DiplomaGuildC.interface.encodeFunctionData(`safeMint`, [student2.address, DIPLOMA_URI]);
-    const proposeTx = await govC.propose(
-        [DiplomaGuildC.address],
-        [0],
-        [transferCalldata],
-        PROJECT_URL,
-      );
-    const proposeTxReceipt = await proposeTx.wait();
-    const propID = (proposeTxReceipt.events?.[0]?.args?.proposalId).toString();
-
-    const beforeAfterVote = await govC.state(propID);
+    const beforeAfterVote = await govC.state(propID.toString());
     expect(beforeAfterVote).to.equal(0);
-    
-    const voteTx = await govC.connect(student1).castVote(propID, 1);  
-    await voteTx.wait();
 
+    await vote(student1, propID, govC);
     await mine(10);
 
     const stateAfterVote = await govC.state(propID);
@@ -172,54 +170,20 @@ describe('Diploma DAO Project', async function () {
 
   it('Graduating student can mint their Diploma NFT', async function () {
     const { student1, student2, markingTokenC, govC, DiplomaGuildC } = await loadFixture(setupAndDeployFixture);
+    await mintMarkingTokens(student1.address,markingTokenC);
+    await delegate(student1, student1.address, markingTokenC);
+    const propID = await submitProject(DiplomaGuildC, govC, PROJECT_URL, student2.address);
 
-    const mintTx = await markingTokenC.mint(student1.address, MARKING_TOKEN_MINT);
-    await mintTx.wait();
-    const delegateTx = await markingTokenC.connect(student1).delegate(student1.address);
-    await delegateTx.wait();
-
-    const transferCalldata = DiplomaGuildC.interface.encodeFunctionData(`safeMint`, [student2.address, DIPLOMA_URI]);
-    const proposeTx = await govC.propose(
-        [DiplomaGuildC.address],
-        [0],
-        [transferCalldata],
-        PROJECT_URL,
-      );
-    const proposeTxReceipt = await proposeTx.wait();
-    const propID = (proposeTxReceipt.events?.[0]?.args?.proposalId).toString();
-
-    const beforeAfterVote = await govC.state(propID);
-    expect(beforeAfterVote).to.equal(0);
-    
-    const voteTx = await govC.connect(student1).castVote(propID, 1);  
-    await voteTx.wait();
-
+    await vote(student1, propID, govC);
     await mine(10);
-
-    const stateAfterVote = await govC.state(propID);
-    expect(stateAfterVote).to.equal(4);
+    await govC.state(propID);
 
     let diplomaBalanceAccount = await DiplomaGuildC.balanceOf(student2.address);
     expect(ethers.utils.formatUnits(diplomaBalanceAccount, 0)).to.equal("0");
 
-    const descriptionHash = ethers.utils.id(PROJECT_URL);
+    await queueProject(DiplomaGuildC, govC, PROJECT_URL, student2.address);
+    await executeProject(DiplomaGuildC, govC, PROJECT_URL, student2.address);
 
-    const queueTx = await govC.queue(
-      [DiplomaGuildC.address],
-      [0],
-      [transferCalldata],
-      descriptionHash,
-    );
-    await queueTx.wait();
-
-    const executeTx = await govC.execute(
-      [DiplomaGuildC.address],
-      [0],
-      [transferCalldata],
-      descriptionHash,
-    );
-    await executeTx.wait();
-    
     diplomaBalanceAccount = await DiplomaGuildC.balanceOf(student2.address);
     expect(ethers.utils.formatUnits(diplomaBalanceAccount, 0)).to.equal("1");
   });
