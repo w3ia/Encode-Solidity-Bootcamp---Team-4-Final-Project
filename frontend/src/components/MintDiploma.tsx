@@ -55,7 +55,7 @@ export default function MintDiploma({
             `${API_BASE_URL}queue-and-execute`,
             {
               projectURL: projectUrl,
-              studentAddress: studentAddress,
+              studentAddress: studentAddress
             }
           );
           alert(
