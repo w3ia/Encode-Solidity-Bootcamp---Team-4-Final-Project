@@ -51,7 +51,7 @@ export default function MintDiploma({
       if (govC) {
         const response = await axios.post(`${API_BASE_URL}queue-and-execute`, {
           projectURL: projectUrl,
-          studentAddress: studentAddress,
+          studentAddress: studentAddress
         });
         console.log(response);
       }
@@ -62,10 +62,17 @@ export default function MintDiploma({
     if (PROJECT_STATES[projectState] === "Succeeded") {
       return <button onClick={mintHandler} className="btn btn-outline btn-secondary">Mint Diploma</button>;
     }
-    if (PROJECT_STATES[projectState] === "Queued" || PROJECT_STATES[projectState] === "Executed") {
+    if (PROJECT_STATES[projectState] === "Queued") {
       return (
         <div>
           Diploma is being minted. Check your wallet address in a few minutes.
+        </div>
+      );
+    }
+    if (PROJECT_STATES[projectState] === "Executed") {
+      return (
+        <div>
+          DiplomaGuild NFT Minted.
         </div>
       );
     }
