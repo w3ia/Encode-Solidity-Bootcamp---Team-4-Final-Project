@@ -3,7 +3,6 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import styles from "../../styles/Navbar.module.css";
 import AppContext from "../components/store/AppContext";
 import { useAccount } from "wagmi";
-import { VoteTokens } from "./stateVars/VoteTokens";
 
 export default function Navbar() {
   const AppCtx = useContext(AppContext);
@@ -40,10 +39,7 @@ export default function Navbar() {
           </ul>
         </div>
       )}
-      {/* <div> */}
-        <VoteTokens />
         <ConnectButton />
-      {/* </div> */}
     </div>
   );
 }
