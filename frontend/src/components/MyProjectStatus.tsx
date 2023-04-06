@@ -12,8 +12,19 @@ import {
 import { GOV_CONTRACT_ADDRESS, GOV_ABI } from "../constants/contracts";
 
 interface Props {
-    projectId?: string;
+  projectId?: string;
 }
+
+const PROJECT_STATES = [
+  "Pending",
+  "Active",
+  "Canceled",
+  "Defeated",
+  "Succeeded",
+  "Queued",
+  "Expired",
+  "Executed",
+];
 
 export default function MyProjectStatus({ projectId }: Props) {
   const [projectState, setProjectState] = useState("");
@@ -38,5 +49,5 @@ export default function MyProjectStatus({ projectId }: Props) {
     getState();
   }, [govC, projectId]);
 
-  return <div>Project Status: {projectState}</div>;
+  return <div>{PROJECT_STATES[Number(projectState)]}</div>;
 }
