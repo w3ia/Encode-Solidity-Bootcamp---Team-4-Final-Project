@@ -86,7 +86,7 @@ The frontend layer is a react based web app that permits the following actions f
 4. Request Diploma if project has passed.
 5. Mark/review other student projects.
 
-UI design/wireframes desgins are available from https://github.com/w3ia/Encode-Solidity-Bootcamp---Team-4-Final-Project/blob/main/diploma_dao_ui_wireframe.pdf
+UI design/wireframes desgins are available from UI design/wireframes desgins are available from [diploma_dao_ui_wireframe.pdf](https://github.com/w3ia/Encode-Solidity-Bootcamp---Team-4-Final-Project/blob/main/diploma_dao_ui_wireframe.pdf)
 
 ## Project Structure
 ```
