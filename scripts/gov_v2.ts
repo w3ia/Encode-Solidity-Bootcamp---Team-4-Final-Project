@@ -77,7 +77,7 @@ async function queueProject(DiplomaGuildC: DiplomaGuildNFT, govC: DiplomaGuildGo
 }
 
 // Execute project (proposal)
-async function executeProject(DiplomaGuildC: DiplomaGuildNFT, govC: DiplomaGuildGov, projectURL: string, studentAddress: string) {
+  async function executeProject(DiplomaGuildC: DiplomaGuildNFT, govC: DiplomaGuildGov, projectURL: string, studentAddress: string) {
     let descriptionHash = ethers.utils.id(projectURL);
     let transferCalldata = DiplomaGuildC.interface.encodeFunctionData(`safeMint`, [studentAddress, diplomaURI]);
     

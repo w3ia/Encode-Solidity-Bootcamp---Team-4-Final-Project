@@ -105,7 +105,7 @@ describe('Diploma DAO Project', async function () {
     );
     await executeTx.wait();
   }
-  
+
   async function vote(voter: SignerWithAddress, propId: BigNumberish, govC: DiplomaGuildGov) {
     let voteTx = await govC.connect(voter).castVote(propId, 1);  
     await voteTx.wait();
@@ -134,7 +134,7 @@ describe('Diploma DAO Project', async function () {
   it('Student can submit their project for review/marking', async function () {
     const { student2, govC, DiplomaGuildC} = await loadFixture(setupAndDeployFixture);
     const propID = await submitProject(DiplomaGuildC, govC, PROJECT_URL, student2.address);
-    expect(propID).not.be.undefined;
+    expect(propID).not.be.undefined || expect(propID).not.be.null;
   });
 
   it('Student can mark (vote on) others project', async function () {
