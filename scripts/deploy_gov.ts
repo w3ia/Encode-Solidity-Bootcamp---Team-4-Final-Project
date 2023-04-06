@@ -9,9 +9,6 @@ import { ethers } from "hardhat";
 import * as dotenv from 'dotenv';
 
 dotenv.config();
-  
-const MINT_VALUE = ethers.utils.parseEther("100");
-const diplomaURI = "ipfs://bafkreihqfo2yd4o7fjveg5bptjgaobwqdd7nk7i7l7a6xmm5s25lrzabjm"
 
 // CONNECT SEPOLIA
 const provider = new ethers.providers.EtherscanProvider('sepolia', 'XCN34W2YDBH64KUSC86FVF6X2XIGYKG2UY')
