@@ -8,15 +8,13 @@ import {
   useSigner,
 } from "wagmi";
 import {
-  FT_CONTRACT_ADDRESS,
-  FT_ABI,
   GOV_CONTRACT_ADDRESS,
   GOV_ABI,
 } from "../constants/contracts";
 import { VoteTokens } from "./stateVars/VoteTokens";
 
 export const Vote = () => {
-  const [vote, setVote] = React.useState("0");
+  const [vote, setVote] = React.useState("");
   const [project, setProject] = React.useState("");
   const { address, isConnected, isDisconnected } = useAccount();
   const { data: signer, isError } = useSigner();
@@ -39,13 +37,15 @@ export const Vote = () => {
     return (
       <div className="card w-96 bg-base-100 shadow-xl image-full">
         <div className="card-body items-center text-center">
-          <h2 className="card-title">Vote Here</h2>
+          <h2 className="card-title">Review Here</h2>
           {/* Display Voting Power */}
           <VoteTokens />
-          <p>
-            Input the proposal ID you want to vote for and if you abstain (0),
-            are for it (1), or against (2).
-          </p>
+          <p>Input the Project ID you want to review. Enter a number: </p>
+
+          <div>(0) - Abstain,</div>
+          <div>(1) - Pass,</div>
+          <div>(2) - Not Pass.</div>
+
           <div className="card-actions justify-center">
             <input
               type="text"
@@ -56,13 +56,13 @@ export const Vote = () => {
             />
             <input
               type="text"
-              placeholder="For, against, or abstain."
+              placeholder="Enter number"
               className="input input-primary input-lg w-full max-w-xs bg-primary"
               onChange={(e) => setVote(e.target.value)}
               value={vote}
             />
             <button className="btn btn-primary" onClick={submitHandler}>
-              Vote Now
+              Submit Review
             </button>
           </div>
         </div>

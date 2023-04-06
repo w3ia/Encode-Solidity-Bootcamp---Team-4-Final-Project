@@ -19,8 +19,6 @@ export const VoteTokens = () => {
   const getVotePower = async () => {
     if (tokenC) {
       let votePower = ethers.utils.formatEther(await tokenC.getVotes(address));
-      console.log("votePower");
-      console.log(votePower);
       AppCtx.setVotePower(votePower)
     }
   };
@@ -30,7 +28,7 @@ export const VoteTokens = () => {
   }, [])
 
   if (isConnected) {
-    return (<div>Voting Power: {AppCtx.votePower}</div>);
+    return (<div>Marking Token Power: {AppCtx.votePower}</div>);
   }
   return <div>Not Connected</div>;
 };
