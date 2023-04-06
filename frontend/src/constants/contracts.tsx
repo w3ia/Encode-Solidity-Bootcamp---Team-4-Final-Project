@@ -4,7 +4,7 @@ import nftJson from "../assets/DiplomaGuildNFT.json";
 import tlJson from "../assets/DiplomaGuildTimeLock.json";
 import proJson from "../assets/DiplomaGuildProps.json";
 
-const GOV_CONTRACT_ADDRESS = "0xE32B360509E8b673aD766CB96bFcA990b03E1c22";
+const GOV_CONTRACT_ADDRESS = "0x04a1239B94779B7Ab1fe73D8D8a56b1f0Ff652ED";
 const FT_CONTRACT_ADDRESS = "0x93530f913232EC2D46daE425E163fBc8eCC399c3";
 const NFT_CONTRACT_ADDRESS = "0xa4a229194FfB476803543f5f31df870ADb424E3F";
 const TL_CONTRACT_ADDRESS = "0xA2A60855DA9dd518E84937db9a2ed5b9b673d8A8";
