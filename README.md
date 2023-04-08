@@ -137,10 +137,6 @@ UI design/wireframes desgins are available from UI design/wireframes desgins are
 │ ├── src
 │ ├── tailwind.config.js
 │ └── tsconfig.json
-├── hardhat.config.ts
-|── node_modules
-├── package-lock.json
-├── package.json
 ```
 ## Local Setup
 Project was built and tested against:
